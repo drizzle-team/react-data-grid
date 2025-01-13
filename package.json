@@ -49,7 +49,8 @@
     "prettier:format": "prettier --write .",
     "typecheck": "tsc --build",
     "prepublishOnly": "npm install && node --run build && node --run build:types",
-    "postpublish": "git push --follow-tags origin HEAD"
+    "postpublish": "git push --follow-tags origin HEAD",
+    "pack": "mkdir -p dist && cp -r lib dist/ && cp package.json dist/ && (cd dist && npm pack --pack-destination ..) && rm -f package.tgz && mv *.tgz package.tgz"
   },
   "dependencies": {
     "clsx": "^2.0.0"

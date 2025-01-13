@@ -30,6 +30,7 @@ function Cell<R, SR>(
     column,
     colSpan,
     isCellSelected,
+    selectedBorder,
     isCopied,
     isDraggedOver,
     row,
@@ -99,6 +100,7 @@ function Cell<R, SR>(
   }
 
   function onMouseDown() {
+    // Prevent cell selection when shift
     if (rangeSelectionMode) {
       selectCellWrapper(false);
     }
@@ -120,6 +122,10 @@ function Cell<R, SR>(
       aria-colindex={column.idx + 1} // aria-colindex is 1-based
       aria-colspan={colSpan}
       aria-selected={isCellSelected}
+      selected-top-border={String(selectedBorder?.top)}
+      selected-left-border={String(selectedBorder?.left)}
+      selected-bottom-border={String(selectedBorder?.bottom)}
+      selected-right-border={String(selectedBorder?.right)}
       aria-readonly={!isEditable || undefined}
       ref={ref}
       tabIndex={tabIndex}

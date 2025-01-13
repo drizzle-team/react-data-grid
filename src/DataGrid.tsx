@@ -26,7 +26,6 @@ import {
   isCtrlKeyHeldDown,
   isDefaultCellInput,
   isSelectedCellEditable,
-  isValueInBetween,
   renderMeasuringCells,
   scrollIntoView,
   sign
@@ -877,12 +876,6 @@ function DataGrid<R, SR, K extends Key>(
     } else {
       setShouldFocusCell(true);
       setSelectedPosition({ ...position, mode: 'SELECT' });
-      setSelectedRange({
-        startColumnIdx: position.idx,
-        startRowIdx: position.rowIdx,
-        endColumnIdx: position.idx,
-        endRowIdx: position.rowIdx
-      });
     }
 
     if (onSelectedCellChange && !samePosition) {
@@ -1158,14 +1151,7 @@ function DataGrid<R, SR, K extends Key>(
               : undefined,
 
           selectedCellIdx: selectedRowIdx === rowIdx ? selectedIdx : undefined,
-          selectedCellsRange:
-          enableRangeSelection &&
-          isValueInBetween(rowIdx, selectedRange.startRowIdx, selectedRange.endRowIdx)
-            ? {
-                startIdx: selectedRange.startColumnIdx,
-                endIdx: selectedRange.endColumnIdx
-              }
-            : { startIdx: -1, endIdx: -1 },
+          selectedRange: enableRangeSelection ? selectedRange : initialSelectedRange,
           draggedOverCellIdx: getDraggedOverCellIdx(rowIdx),
           setDraggedOverRowIdx: isDragging ? setDraggedOverRowIdx : undefined,
           lastFrozenColumnIndex,
@@ -1173,16 +1159,27 @@ function DataGrid<R, SR, K extends Key>(
           selectCell: selectCellLatest,
           selectedCellEditor: getCellEditor(rowIdx),
           rangeSelectionMode: enableRangeSelection,
-          onCellMouseDown: () => setIsMouseRangeSelectionMode(true),
+          onCellMouseDown({ column }, { shiftKey }) {
+            if (!enableRangeSelection) return;
+
+            if (shiftKey) {
+              setSelectedRange((boundValue) => ({
+                ...boundValue,
+                endRowIdx: rowIdx,
+                endColumnIdx: column.idx
+              }));
+            } else {
+              setIsMouseRangeSelectionMode(true);
+              setSelectedRange({
+                startRowIdx: rowIdx,
+                startColumnIdx: column.idx,
+                endRowIdx: rowIdx,
+                endColumnIdx: column.idx
+              });
+            }
+          },
           onCellMouseUp() {
             setIsMouseRangeSelectionMode(false);
-            // Once the ranges are decided, re-evaluate start and end;
-            setSelectedRange((boundValue) => ({
-              startColumnIdx: Math.min(boundValue.startColumnIdx, boundValue.endColumnIdx),
-              endColumnIdx: Math.max(boundValue.startColumnIdx, boundValue.endColumnIdx),
-              startRowIdx: Math.min(boundValue.startRowIdx, boundValue.endRowIdx),
-              endRowIdx: Math.max(boundValue.startRowIdx, boundValue.endRowIdx)
-            }));
           },
           onCellMouseEnter({ column }) {
             if (isMouseRangeSelectionMode && enableRangeSelection) {

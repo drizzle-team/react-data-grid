@@ -22,12 +22,38 @@ export const cell = css`
     text-overflow: ellipsis;
     outline: none;
 
-    &[aria-selected='true'] {
-      outline: 2px solid var(--rdg-selection-color);
-      outline-offset: -2px;
+    overflow: visible;
+
+    &[selected-top-border='true']:before,
+    &[selected-left-border='true']:before,
+    &[selected-bottom-border='true']:before,
+    &[selected-right-border='true']:before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      pointer-events: none;
+    }
+
+    &[selected-top-border='true']:before {
+      border-top: 2px solid var(--rdg-selection-color);
+    }
+
+    &[selected-left-border='true']:before {
+      border-left: 2px solid var(--rdg-selection-color);
+    }
+
+    &[selected-bottom-border='true']:before {
+      border-bottom: 2px solid var(--rdg-selection-color);
+    }
+
+    &[selected-right-border='true']:before {
+      border-right: 2px solid var(--rdg-selection-color);
     }
   }
 `;
+
+// outline: 2px solid var(--rdg-selection-color);
+// outline-offset: -2px;
 
 export const cellClassname = `rdg-cell ${cell}`;
 

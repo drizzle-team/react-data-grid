@@ -164,6 +164,7 @@ export interface CellRendererProps<TRow, TSummaryRow>
   isCopied: boolean;
   isDraggedOver: boolean;
   isCellSelected: boolean;
+  selectedBorder: { top: boolean; bottom: boolean; left: boolean; right: boolean } | undefined;
   onClick: RenderRowProps<TRow, TSummaryRow>['onCellClick'];
   onDoubleClick: RenderRowProps<TRow, TSummaryRow>['onCellDoubleClick'];
   onContextMenu: RenderRowProps<TRow, TSummaryRow>['onCellContextMenu'];
@@ -243,7 +244,7 @@ export interface RenderRowProps<TRow, TSummaryRow = unknown>
   rowClass: Maybe<(row: TRow, rowIdx: number) => Maybe<string>>;
   setDraggedOverRowIdx: ((overRowIdx: number) => void) | undefined;
   // Multi range selection
-  selectedCellsRange: { startIdx: number; endIdx: number };
+  selectedRange: CellsRange;
   rangeSelectionMode: boolean;
   onCellMouseDown: Maybe<
     (args: CellClickArgs<NoInfer<TRow>, NoInfer<TSummaryRow>>, event: CellMouseEvent) => void
