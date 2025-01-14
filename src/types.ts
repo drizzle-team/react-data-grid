@@ -169,7 +169,6 @@ export interface CellRendererProps<TRow, TSummaryRow>
   onDoubleClick: RenderRowProps<TRow, TSummaryRow>['onCellDoubleClick'];
   onContextMenu: RenderRowProps<TRow, TSummaryRow>['onCellContextMenu'];
   onRowChange: (column: CalculatedColumn<TRow, TSummaryRow>, newRow: TRow) => void;
-  rangeSelectionMode: boolean;
   onMouseDownCapture: RenderRowProps<TRow, TSummaryRow>['onCellMouseDown'];
   onMouseUpCapture: RenderRowProps<TRow, TSummaryRow>['onCellMouseUp'];
   onMouseEnter: RenderRowProps<TRow, TSummaryRow>['onCellMouseEnter'];

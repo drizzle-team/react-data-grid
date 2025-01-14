@@ -50,7 +50,7 @@
     "typecheck": "tsc --build",
     "prepublishOnly": "npm install && node --run build && node --run build:types",
     "postpublish": "git push --follow-tags origin HEAD",
-    "pack": "mkdir -p dist && cp -r lib dist/ && cp package.json dist/ && (cd dist && npm pack --pack-destination ..) && rm -f package.tgz && mv *.tgz package.tgz"
+    "pack": "mkdir -p dist && cp -r lib dist/ && cp package.json dist/ && (cd dist && npm pack --pack-destination ..) && rm -f react-data-grid.tgz && mv *.tgz react-data-grid.tgz"
   },
   "dependencies": {
     "clsx": "^2.0.0"

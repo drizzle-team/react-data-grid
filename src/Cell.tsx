@@ -42,7 +42,6 @@ function Cell<R, SR>(
     onRowChange,
     selectCell,
     style,
-    rangeSelectionMode,
     onMouseDownCapture,
     onMouseUpCapture,
     onMouseEnter,
@@ -99,12 +98,6 @@ function Cell<R, SR>(
     onRowChange(column, newRow);
   }
 
-  function onMouseDown() {
-    if (rangeSelectionMode) {
-      selectCellWrapper();
-    }
-  }
-
   function getOnMouseEvent(handler: typeof onMouseDownCapture) {
     function onMouseEvent(event: React.MouseEvent<HTMLDivElement>) {
       if (handler) {
@@ -121,10 +114,10 @@ function Cell<R, SR>(
       aria-colindex={column.idx + 1} // aria-colindex is 1-based
       aria-colspan={colSpan}
       aria-selected={isCellSelected}
-      selected-top-border={String(selectedBorder?.top)}
-      selected-left-border={String(selectedBorder?.left)}
-      selected-bottom-border={String(selectedBorder?.bottom)}
-      selected-right-border={String(selectedBorder?.right)}
+      selected-top-border={selectedBorder?.top ? 'true' : undefined}
+      selected-left-border={selectedBorder?.left ? 'true' : undefined}
+      selected-bottom-border={selectedBorder?.bottom ? 'true' : undefined}
+      selected-right-border={selectedBorder?.right ? 'true' : undefined}
       aria-readonly={!isEditable || undefined}
       ref={ref}
       tabIndex={tabIndex}
@@ -137,7 +130,6 @@ function Cell<R, SR>(
       onDoubleClick={handleDoubleClick}
       onContextMenu={handleContextMenu}
       onFocus={onFocus}
-      onMouseDown={onMouseDown}
       onMouseDownCapture={getOnMouseEvent(onMouseDownCapture)}
       onMouseUpCapture={getOnMouseEvent(onMouseUpCapture)}
       onMouseEnter={getOnMouseEvent(onMouseEnter)}

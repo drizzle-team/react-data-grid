@@ -75,8 +75,12 @@ function Row<R, SR>(
         isValueInBetween(rowIdx, selectedRange.startRowIdx, selectedRange.endRowIdx) &&
         isValueInBetween(idx, selectedRange.startColumnIdx, selectedRange.endColumnIdx));
 
-        
-    const selectedBorder = rangeSelectionMode && isCellSelected ? getBorderObject(rowIdx, idx, selectedRange) : undefined;
+    const selectedBorder = isCellSelected ? rangeSelectionMode ? getBorderObject(rowIdx, idx, selectedRange) : {
+      top: true,
+      bottom: true,
+      left: true,
+      right: true
+    } : undefined;
 
     if (isCellSelected && selectedCellEditor) {
       cells.push(selectedCellEditor);
@@ -99,7 +103,6 @@ function Row<R, SR>(
           onMouseDownCapture: onCellMouseDown,
           onMouseUpCapture: onCellMouseUp,
           onMouseEnter: onCellMouseEnter,
-          rangeSelectionMode
         })
       );
     }
