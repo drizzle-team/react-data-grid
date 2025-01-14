@@ -35,25 +35,30 @@ export const cell = css`
     }
 
     &[selected-top-border='true']:before {
-      border-top: 2px solid var(--rdg-selection-color);
+      border-top-color: var(--rdg-selection-color);
+      border-top-width: 2px;
+      border-top-style: solid;
     }
 
     &[selected-left-border='true']:before {
-      border-left: 2px solid var(--rdg-selection-color);
+      border-left-color: var(--rdg-selection-color);
+      border-left-width: 2px;
+      border-left-style: solid;
     }
 
     &[selected-bottom-border='true']:before {
-      border-bottom: 2px solid var(--rdg-selection-color);
+      border-bottom-color: var(--rdg-selection-color);
+      border-bottom-width: 2px;
+      border-bottom-style: solid;
     }
 
     &[selected-right-border='true']:before {
-      border-right: 2px solid var(--rdg-selection-color);
+      border-right-color: var(--rdg-selection-color);
+      border-right-width: 2px;
+      border-right-style: solid;
     }
   }
 `;
-
-// outline: 2px solid var(--rdg-selection-color);
-// outline-offset: -2px;
 
 export const cellClassname = `rdg-cell ${cell}`;
 

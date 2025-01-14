@@ -1159,24 +1159,8 @@ function DataGrid<R, SR, K extends Key>(
           selectCell: selectCellLatest,
           selectedCellEditor: getCellEditor(rowIdx),
           rangeSelectionMode: enableRangeSelection,
-          onCellMouseDown({ column }, { shiftKey }) {
-            if (!enableRangeSelection) return;
-
-            if (shiftKey) {
-              setSelectedRange((boundValue) => ({
-                ...boundValue,
-                endRowIdx: rowIdx,
-                endColumnIdx: column.idx
-              }));
-            } else {
-              setIsMouseRangeSelectionMode(true);
-              setSelectedRange({
-                startRowIdx: rowIdx,
-                startColumnIdx: column.idx,
-                endRowIdx: rowIdx,
-                endColumnIdx: column.idx
-              });
-            }
+          onCellMouseDown() {
+            setIsMouseRangeSelectionMode(true);
           },
           onCellMouseUp() {
             setIsMouseRangeSelectionMode(false);

@@ -100,9 +100,8 @@ function Cell<R, SR>(
   }
 
   function onMouseDown() {
-    // Prevent cell selection when shift
     if (rangeSelectionMode) {
-      selectCellWrapper(false);
+      selectCellWrapper();
     }
   }
 
