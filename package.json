@@ -1,5 +1,5 @@
 {
-  "name": "react-data-grid",
+  "name": "@drizzle-team/react-data-grid",
   "version": "7.0.0-beta.47",
   "license": "MIT",
   "description": "Feature-rich and customizable data grid React component",
@@ -9,7 +9,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/adazzle/react-data-grid.git"
+    "url": "git+https://github.com/drizzle-team/react-data-grid.git"
   },
   "bugs": "https://github.com/adazzle/react-data-grid/issues",
   "type": "module",
@@ -48,7 +48,7 @@
     "prettier:check": "prettier --check .",
     "prettier:format": "prettier --write .",
     "typecheck": "tsc --build",
-    "prepublishOnly": "npm install && node --run build && node --run build:types",
+    "prepublishOnly": "pnpm install && pnpm build && pnpm build:types",
     "postpublish": "git push --follow-tags origin HEAD",
     "pack": "mkdir -p dist && cp -r lib dist/ && cp package.json dist/ && (cd dist && npm pack --pack-destination ..) && rm -f react-data-grid.tgz && mv *.tgz react-data-grid.tgz"
   },
