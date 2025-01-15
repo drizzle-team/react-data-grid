@@ -760,13 +760,19 @@ function DataGrid<R, SR, K extends Key>(
 
   function handleCopy() {
     if (enableRangeSelection) {
-      setCopiedRange(selectedRange);
-      const sourceRows = rows.slice(selectedRange.startRowIdx, selectedRange.endRowIdx + 1);
+      const correctedRange = {
+        startRowIdx: Math.min(selectedRange.startRowIdx, selectedRange.endRowIdx),
+        startColumnIdx: Math.min(selectedRange.startColumnIdx, selectedRange.endColumnIdx),
+        endRowIdx: Math.max(selectedRange.startRowIdx, selectedRange.endRowIdx),
+        endColumnIdx: Math.max(selectedRange.startColumnIdx, selectedRange.endColumnIdx)
+      };
+      setCopiedRange(correctedRange);
+      const sourceRows = rows.slice(correctedRange.startRowIdx, correctedRange.endRowIdx + 1);
       const sourceColumnKeys = columns
-        .slice(selectedRange.startColumnIdx, selectedRange.endColumnIdx + 1)
+        .slice(correctedRange.startColumnIdx, correctedRange.endColumnIdx + 1)
         .map((c) => c.key);
       onMultiCopy?.({
-        cellsRange: selectedRange,
+        cellsRange: correctedRange,
         sourceRows,
         sourceColumnKeys
       });
