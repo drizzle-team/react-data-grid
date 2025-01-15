@@ -1208,6 +1208,7 @@ function DataGrid<R, SR, K extends Key>(
     setSelectedPosition({ idx: -1, rowIdx: minRowIdx - 1, mode: 'SELECT' });
     // eslint-disable-next-line react-compiler/react-compiler
     setDraggedOverRowIdx(undefined);
+    setSelectedRange(initialSelectedRange);
   }
 
   let templateRows = `repeat(${headerRowsCount}, ${headerRowHeight}px)`;
