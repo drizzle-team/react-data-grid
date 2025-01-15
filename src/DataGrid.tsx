@@ -1170,11 +1170,6 @@ function DataGrid<R, SR, K extends Key>(
               }));
             } else {
               setIsMouseRangeSelectionMode(true);
-              // select the initial cell
-              selectCellLatest({
-                rowIdx,
-                idx: column.idx
-              });
               // set the initial range selection
               setSelectedRange({
                 startRowIdx: rowIdx,
@@ -1184,10 +1179,16 @@ function DataGrid<R, SR, K extends Key>(
               });
             }
           },
-          onCellMouseUp() {
+          onCellMouseUp({ column }) {
             if (!enableRangeSelection) return;
 
             setIsMouseRangeSelectionMode(false);
+
+            // select the final cell
+            selectCellLatest({
+              rowIdx,
+              idx: column.idx
+            });
           },
           onCellMouseEnter({ column }) {
             if (!enableRangeSelection) return;
