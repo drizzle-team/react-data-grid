@@ -1170,6 +1170,11 @@ function DataGrid<R, SR, K extends Key>(
               }));
             } else {
               setIsMouseRangeSelectionMode(true);
+              // select the initial cell
+              selectCellLatest({
+                rowIdx,
+                idx: column.idx
+              });
               // set the initial range selection
               setSelectedRange({
                 startRowIdx: rowIdx,
