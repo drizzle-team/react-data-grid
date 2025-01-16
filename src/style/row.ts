@@ -23,7 +23,7 @@ export const rowClassname = `rdg-row ${row}`;
 
 export const rowSelected = css`
   @layer rdg.FocusSink {
-    outline: 2px solid var(--rdg-selection-color);
+    outline: 2px solid var(--rdg-selection-border-color);
     outline-offset: -2px;
   }
 `;
@@ -38,7 +38,7 @@ export const rowSelectedWithFrozenCell = css`
       block-size: 100%;
       position: sticky;
       inset-inline-start: 0;
-      border-inline-start: 2px solid var(--rdg-selection-color);
+      border-inline-start: 2px solid var(--rdg-selection-border-color);
     }
   }
 `;

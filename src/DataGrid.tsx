@@ -176,6 +176,7 @@ export interface DataGridProps<R, SR = unknown, K extends Key = Key> extends Sha
   onMultiPaste?: Maybe<(event: MultiPasteEvent) => void>;
   onMultiCopy?: Maybe<(event: MultiCopyEvent<NoInfer<R>>) => void>;
   rangeLeftBoundaryColIdx?: Maybe<number>;
+  rangeRightBoundaryColIdx?: Maybe<number>;
   onSelectedRangeChange?: Maybe<(selectedRange: CellsRange) => void>;
 
   /**
@@ -269,6 +270,7 @@ function DataGrid<R, SR, K extends Key>(
     onMultiPaste,
     onMultiCopy,
     rangeLeftBoundaryColIdx,
+    rangeRightBoundaryColIdx,
     onSelectedRangeChange,
     // Toggles and modes
     enableVirtualization: rawEnableVirtualization,
@@ -395,6 +397,10 @@ function DataGrid<R, SR, K extends Key>(
     typeof rangeLeftBoundaryColIdx === 'undefined' || rangeLeftBoundaryColIdx == null
       ? -1
       : rangeLeftBoundaryColIdx;
+  const rangeRightBoundary =
+    typeof rangeRightBoundaryColIdx === 'undefined' || rangeRightBoundaryColIdx == null
+      ? columns.length - 1
+      : rangeRightBoundaryColIdx;
 
 
   const defaultGridComponents = useMemo(
@@ -436,7 +442,10 @@ function DataGrid<R, SR, K extends Key>(
     if (boundValue.startColumnIdx <= rangeLeftBoundary) {
       boundValue.startColumnIdx = rangeLeftBoundary + 1;
     }
-    if (boundValue.endColumnIdx > rangeLeftBoundary) {
+    if (boundValue.endColumnIdx >= rangeRightBoundary) {
+      boundValue.endColumnIdx = rangeRightBoundary - 1;
+    }
+    if (boundValue.endColumnIdx > rangeLeftBoundary && boundValue.startColumnIdx < rangeRightBoundary) {
       setSelectedRange(boundValue);
     }
   };
@@ -1185,16 +1194,10 @@ function DataGrid<R, SR, K extends Key>(
               });
             }
           },
-          onCellMouseUp({ column }) {
+          onCellMouseUp() {
             if (!enableRangeSelection) return;
 
             setIsMouseRangeSelectionMode(false);
-
-            // select the final cell
-            selectCellLatest({
-              rowIdx,
-              idx: column.idx
-            });
           },
           onCellMouseEnter({ column }) {
             if (!enableRangeSelection) return;

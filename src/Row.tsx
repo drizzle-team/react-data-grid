@@ -70,10 +70,9 @@ function Row<R, SR>(
     }
 
     const isCellSelected =
-      selectedCellIdx === idx ||
-      (rangeSelectionMode &&
+      rangeSelectionMode ? 
         isValueInBetween(rowIdx, selectedRange.startRowIdx, selectedRange.endRowIdx) &&
-        isValueInBetween(idx, selectedRange.startColumnIdx, selectedRange.endColumnIdx));
+        isValueInBetween(idx, selectedRange.startColumnIdx, selectedRange.endColumnIdx) : selectedCellIdx === idx;
 
     const selectedBorder = isCellSelected ? rangeSelectionMode ? getBorderObject(rowIdx, idx, selectedRange) : {
       top: true,

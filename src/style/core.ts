@@ -42,7 +42,8 @@ const root = css`
 
   @layer rdg.Root {
     ${lightTheme}
-    --rdg-selection-color: #66afe9;
+    --rdg-selection-border-color: #66afe9;
+    --rdg-selection-background-color: #66afe914;
     --rdg-font-size: 14px;
     --rdg-cell-frozen-box-shadow: 2px 0 5px -2px rgba(136, 136, 136, 0.3);
 
