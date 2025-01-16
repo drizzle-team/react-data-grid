@@ -891,6 +891,11 @@ function DataGrid<R, SR, K extends Key>(
     } else {
       setShouldFocusCell(true);
       setSelectedPosition({ ...position, mode: 'SELECT' });
+      setSelectedRange((boundValue) => ({
+        ...boundValue,
+        endRowIdx: position.rowIdx,
+        endColumnIdx: position.idx
+      }));
     }
 
     if (onSelectedCellChange && !samePosition) {
@@ -1177,13 +1182,7 @@ function DataGrid<R, SR, K extends Key>(
           onCellMouseDown({ column }, { shiftKey }) {
             if (!enableRangeSelection) return;
 
-            if (shiftKey) {
-              setSelectedRange((boundValue) => ({
-                ...boundValue,
-                endRowIdx: rowIdx,
-                endColumnIdx: column.idx
-              }));
-            } else {
+            if (!shiftKey) {
               setIsMouseRangeSelectionMode(true);
               // set the initial range selection
               setSelectedRange({
@@ -1194,10 +1193,23 @@ function DataGrid<R, SR, K extends Key>(
               });
             }
           },
-          onCellMouseUp() {
+          onCellMouseUp({ column }, { shiftKey }) {
             if (!enableRangeSelection) return;
 
-            setIsMouseRangeSelectionMode(false);
+            if (shiftKey) {
+              setSelectedRange((boundValue) => ({
+                ...boundValue,
+                endRowIdx: rowIdx,
+                endColumnIdx: column.idx
+              }));
+            } else {
+              setIsMouseRangeSelectionMode(false);
+              // select final cell
+              selectCellLatest({
+                rowIdx,
+                idx: column.idx
+              })
+            }
           },
           onCellMouseEnter({ column }) {
             if (!enableRangeSelection) return;

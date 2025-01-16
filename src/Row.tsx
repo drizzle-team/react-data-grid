@@ -70,11 +70,15 @@ function Row<R, SR>(
     }
 
     const isCellSelected =
-      rangeSelectionMode ? 
-        isValueInBetween(rowIdx, selectedRange.startRowIdx, selectedRange.endRowIdx) &&
-        isValueInBetween(idx, selectedRange.startColumnIdx, selectedRange.endColumnIdx) : selectedCellIdx === idx;
+      selectedCellIdx === idx;
 
-    const selectedBorder = isCellSelected ? rangeSelectionMode ? getBorderObject(rowIdx, idx, selectedRange) : {
+    const isCellInSelectedRange = (rangeSelectionMode &&
+      isValueInBetween(rowIdx, selectedRange.startRowIdx, selectedRange.endRowIdx) &&
+      isValueInBetween(idx, selectedRange.startColumnIdx, selectedRange.endColumnIdx))
+
+    const selectedBorder = rangeSelectionMode && isCellInSelectedRange
+     ? getBorderObject(rowIdx, idx, selectedRange) 
+     : !rangeSelectionMode && isCellSelected ? {
       top: true,
       bottom: true,
       left: true,
@@ -92,7 +96,7 @@ function Row<R, SR>(
           rowIdx,
           isCopied: copiedCellIdx === idx,
           isDraggedOver: draggedOverCellIdx === idx,
-          isCellSelected,
+          isCellSelected: rangeSelectionMode ? isCellInSelectedRange : isCellSelected,
           selectedBorder,
           onClick: onCellClick,
           onDoubleClick: onCellDoubleClick,
