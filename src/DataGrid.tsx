@@ -891,11 +891,11 @@ function DataGrid<R, SR, K extends Key>(
     } else {
       setShouldFocusCell(true);
       setSelectedPosition({ ...position, mode: 'SELECT' });
-      setSelectedRange((boundValue) => ({
-        ...boundValue,
+      setSelectedRangeWithBoundary({
+        ...selectedRange,
         endRowIdx: position.rowIdx,
         endColumnIdx: position.idx
-      }));
+      });
     }
 
     if (onSelectedCellChange && !samePosition) {
