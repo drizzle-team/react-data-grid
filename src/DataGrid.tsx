@@ -103,7 +103,13 @@ const initialSelectedRange: CellsRange = {
 export interface DataGridHandle {
   element: HTMLDivElement | null;
   scrollToCell: (position: PartialPosition) => void;
-  selectCell: (position: Position, enableEditor?: Maybe<boolean>) => void;
+  selectCell: (
+    position: Position,
+    options?: {
+      enableEditor?: Maybe<boolean>;
+      shiftKey?: Maybe<boolean>;
+    }
+  ) => void;
 }
 
 type SharedDivProps = Pick<
@@ -175,8 +181,10 @@ export interface DataGridProps<R, SR = unknown, K extends Key = Key> extends Sha
   onPaste?: Maybe<(event: PasteEvent<NoInfer<R>>) => NoInfer<R>>;
   onMultiPaste?: Maybe<(event: MultiPasteEvent) => void>;
   onMultiCopy?: Maybe<(event: MultiCopyEvent<NoInfer<R>>) => void>;
-  rangeLeftBoundaryColIdx?: Maybe<number>;
-  rangeRightBoundaryColIdx?: Maybe<number>;
+  selectionLeftBoundaryColIdx?: Maybe<number>;
+  selectionRightBoundaryColIdx?: Maybe<number>;
+  selectionTopBoundaryRowIdx?: Maybe<number>;
+  selectionBottomBoundaryRowIdx?: Maybe<number>;
   onSelectedRangeChange?: Maybe<(selectedRange: CellsRange) => void>;
 
   /**
@@ -269,8 +277,10 @@ function DataGrid<R, SR, K extends Key>(
     onPaste,
     onMultiPaste,
     onMultiCopy,
-    rangeLeftBoundaryColIdx,
-    rangeRightBoundaryColIdx,
+    selectionLeftBoundaryColIdx,
+    selectionRightBoundaryColIdx,
+    selectionTopBoundaryRowIdx,
+    selectionBottomBoundaryRowIdx,
     onSelectedRangeChange,
     // Toggles and modes
     enableVirtualization: rawEnableVirtualization,
@@ -393,14 +403,6 @@ function DataGrid<R, SR, K extends Key>(
   const leftKey = isRtl ? 'ArrowRight' : 'ArrowLeft';
   const rightKey = isRtl ? 'ArrowLeft' : 'ArrowRight';
   const ariaRowCount = rawAriaRowCount ?? headerRowsCount + rows.length + summaryRowsCount;
-  const rangeLeftBoundary =
-    typeof rangeLeftBoundaryColIdx === 'undefined' || rangeLeftBoundaryColIdx == null
-      ? -1
-      : rangeLeftBoundaryColIdx;
-  const rangeRightBoundary =
-    typeof rangeRightBoundaryColIdx === 'undefined' || rangeRightBoundaryColIdx == null
-      ? columns.length - 1
-      : rangeRightBoundaryColIdx;
 
 
   const defaultGridComponents = useMemo(
@@ -434,21 +436,6 @@ function DataGrid<R, SR, K extends Key>(
       isIndeterminate: hasSelectedRow && hasUnselectedRow
     };
   }, [rows, selectedRows, rowKeyGetter]);
-
-  const setSelectedRangeWithBoundary = (value: CellsRange) => {
-    const boundValue = {
-      ...value
-    };
-    if (boundValue.startColumnIdx <= rangeLeftBoundary) {
-      boundValue.startColumnIdx = rangeLeftBoundary + 1;
-    }
-    if (boundValue.endColumnIdx >= rangeRightBoundary) {
-      boundValue.endColumnIdx = rangeRightBoundary - 1;
-    }
-    if (boundValue.endColumnIdx > rangeLeftBoundary && boundValue.startColumnIdx < rangeRightBoundary) {
-      setSelectedRange(boundValue);
-    }
-  };
 
   const {
     rowOverscanStartIdx,
@@ -494,10 +481,55 @@ function DataGrid<R, SR, K extends Key>(
 
   const minColIdx = isTreeGrid ? -1 : 0;
   const maxColIdx = columns.length - 1;
-  const selectedCellIsWithinSelectionBounds = isCellWithinSelectionBounds(selectedPosition);
-  const selectedCellIsWithinViewportBounds = isCellWithinViewportBounds(selectedPosition);
   const scrollHeight =
     headerRowHeight + totalRowHeight + summaryRowsHeight + horizontalScrollbarHeight;
+  const selectionLeftBoundary =
+    typeof selectionLeftBoundaryColIdx === 'undefined' || selectionLeftBoundaryColIdx == null
+      ? minColIdx - 1
+      : selectionLeftBoundaryColIdx;
+  const selectionRightBoundary =
+    typeof selectionRightBoundaryColIdx === 'undefined' || selectionRightBoundaryColIdx == null
+      ? maxColIdx + 1
+      : selectionRightBoundaryColIdx;
+  const selectionTopBoundary =
+    typeof selectionTopBoundaryRowIdx === 'undefined' || selectionTopBoundaryRowIdx == null
+      ? minRowIdx - 1
+      : selectionTopBoundaryRowIdx;
+  const selectionBottomBoundary =
+    typeof selectionBottomBoundaryRowIdx === 'undefined' || selectionBottomBoundaryRowIdx == null
+      ? maxRowIdx + 1
+      : selectionBottomBoundaryRowIdx;
+  const selectedCellIsWithinSelectionBounds = isCellWithinSelectionBounds(selectedPosition);
+  const selectedCellIsWithinViewportBounds = isCellWithinViewportBounds(selectedPosition);
+
+  const setSelectedRangeWithBoundary = (value: CellsRange) => {
+    const boundValue = { ...value };
+
+    const adjustBoundary = (start: number, end: number, min: number, max: number) => {
+      if (end <= min) end = min + 1;
+      if (start >= max) start = max - 1;
+      if (start <= min) start = min + 1;
+      if (end >= max) end = max - 1;
+      return { start, end };
+    };
+
+    const rowBoundary = adjustBoundary(boundValue.startRowIdx, boundValue.endRowIdx, selectionTopBoundary, selectionBottomBoundary);
+    const columnBoundary = adjustBoundary(boundValue.startColumnIdx, boundValue.endColumnIdx, selectionLeftBoundary, selectionRightBoundary);
+  
+    boundValue.startRowIdx = rowBoundary.start;
+    boundValue.endRowIdx = rowBoundary.end;
+    boundValue.startColumnIdx = columnBoundary.start;
+    boundValue.endColumnIdx = columnBoundary.end;
+
+    if (
+      boundValue.endColumnIdx > selectionLeftBoundary &&
+      boundValue.startColumnIdx < selectionRightBoundary &&
+      boundValue.endRowIdx > selectionTopBoundary &&
+      boundValue.startRowIdx < selectionBottomBoundary
+    ) {
+      setSelectedRange(boundValue);
+    }
+  };
 
   /**
    * The identity of the wrapper function is stable so it won't break memoization
@@ -850,7 +882,7 @@ function DataGrid<R, SR, K extends Key>(
    * utils
    */
   function isColIdxWithinSelectionBounds(idx: number) {
-    return idx >= minColIdx && idx <= maxColIdx;
+    return idx >= minColIdx && idx <= maxColIdx && idx > selectionLeftBoundary && idx < selectionRightBoundary;
   }
 
   function isRowIdxWithinViewportBounds(rowIdx: number) {
@@ -858,7 +890,7 @@ function DataGrid<R, SR, K extends Key>(
   }
 
   function isCellWithinSelectionBounds({ idx, rowIdx }: Position): boolean {
-    return rowIdx >= minRowIdx && rowIdx <= maxRowIdx && isColIdxWithinSelectionBounds(idx);
+    return rowIdx >= minRowIdx && rowIdx <= maxRowIdx && rowIdx > selectionTopBoundary && rowIdx < selectionBottomBoundary && isColIdxWithinSelectionBounds(idx);
   }
 
   function isCellWithinEditBounds({ idx, rowIdx }: Position): boolean {
@@ -876,7 +908,10 @@ function DataGrid<R, SR, K extends Key>(
     );
   }
 
-  function selectCell(position: Position, enableEditor?: Maybe<boolean>): void {
+  function selectCell(position: Position, { enableEditor, shiftKey }: {
+    enableEditor?: Maybe<boolean>
+    shiftKey?: Maybe<boolean>
+  } = {}): void {
     if (!isCellWithinSelectionBounds(position)) return;
     commitEditorChanges();
 
@@ -891,8 +926,13 @@ function DataGrid<R, SR, K extends Key>(
     } else {
       setShouldFocusCell(true);
       setSelectedPosition({ ...position, mode: 'SELECT' });
-      setSelectedRangeWithBoundary({
+      setSelectedRangeWithBoundary(shiftKey ?{
         ...selectedRange,
+        endRowIdx: position.rowIdx,
+        endColumnIdx: position.idx
+      } : {
+        startRowIdx: position.rowIdx,
+        startColumnIdx: position.idx,
         endRowIdx: position.rowIdx,
         endColumnIdx: position.idx
       });
@@ -1193,23 +1233,17 @@ function DataGrid<R, SR, K extends Key>(
               });
             }
           },
-          onCellMouseUp({ column }, { shiftKey }) {
+          onCellMouseUp({ column }) {
             if (!enableRangeSelection) return;
 
-            if (shiftKey) {
-              setSelectedRange((boundValue) => ({
-                ...boundValue,
-                endRowIdx: rowIdx,
-                endColumnIdx: column.idx
-              }));
-            } else {
-              setIsMouseRangeSelectionMode(false);
-              // select final cell
-              selectCellLatest({
-                rowIdx,
-                idx: column.idx
-              })
-            }
+            setIsMouseRangeSelectionMode(false);
+            // select final cell
+            selectCellLatest({
+              rowIdx,
+              idx: column.idx
+            }, {
+              shiftKey: true
+            })
           },
           onCellMouseEnter({ column }) {
             if (!enableRangeSelection) return;

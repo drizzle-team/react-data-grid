@@ -63,8 +63,8 @@ function Cell<R, SR>(
   );
   const isEditable = isCellEditableUtil(column, row);
 
-  function selectCellWrapper(openEditor?: boolean) {
-    selectCell({ rowIdx, idx: column.idx }, openEditor);
+  function selectCellWrapper(enableEditor?: boolean, shiftKey?: boolean) {
+    selectCell({ rowIdx, idx: column.idx }, { enableEditor, shiftKey});
   }
 
   function handleClick(event: React.MouseEvent<HTMLDivElement>) {
@@ -73,7 +73,7 @@ function Cell<R, SR>(
       onClick({ rowIdx, row, column, selectCell: selectCellWrapper }, cellEvent);
       if (cellEvent.isGridDefaultPrevented()) return;
     }
-    selectCellWrapper();
+    selectCellWrapper(false, event.shiftKey);
   }
 
   function handleContextMenu(event: React.MouseEvent<HTMLDivElement>) {

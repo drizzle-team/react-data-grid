@@ -385,7 +385,8 @@ export default function RangeSelection() {
       className="fill-grid"
       direction={direction}
       enableRangeSelection
-      rangeLeftBoundaryColIdx={0}
+      selectionLeftBoundaryColIdx={0}
+      selectionTopBoundaryRowIdx={-1}
       onMultiCopy={handleMultiCopy}
       onMultiPaste={handleMultiPaste}
       renderers={{ noRowsFallback: <h1>No rows</h1> }}

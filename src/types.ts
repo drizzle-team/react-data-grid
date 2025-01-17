@@ -195,7 +195,13 @@ interface SelectCellKeyDownArgs<TRow, TSummaryRow = unknown> {
   row: TRow;
   column: CalculatedColumn<TRow, TSummaryRow>;
   rowIdx: number;
-  selectCell: (position: Position, enableEditor?: Maybe<boolean>) => void;
+  selectCell: (
+    position: Position,
+    options?: {
+      enableEditor?: Maybe<boolean>;
+      shiftKey?: Maybe<boolean>;
+    }
+  ) => void;
 }
 
 export interface EditCellKeyDownArgs<TRow, TSummaryRow = unknown> {
@@ -229,7 +235,13 @@ export interface BaseRenderRowProps<TRow, TSummaryRow = unknown>
   isRowSelectionDisabled: boolean;
   isRowSelected: boolean;
   gridRowStart: number;
-  selectCell: (position: Position, enableEditor?: Maybe<boolean>) => void;
+  selectCell: (
+    position: Position,
+    options?: {
+      enableEditor?: Maybe<boolean>;
+      shiftKey?: Maybe<boolean>;
+    }
+  ) => void;
 }
 
 export interface RenderRowProps<TRow, TSummaryRow = unknown>
