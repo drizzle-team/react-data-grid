@@ -1224,7 +1224,11 @@ function DataGrid<R, SR, K extends Key>(
 
             if (!shiftKey) {
               setIsMouseRangeSelectionMode(true);
+
               // set the initial range selection
+              if (!isCellWithinSelectionBounds({ idx: column.idx, rowIdx })) {
+                return;
+              }
               setSelectedRange({
                 startRowIdx: rowIdx,
                 startColumnIdx: column.idx,
