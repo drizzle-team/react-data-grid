@@ -86,6 +86,7 @@ interface EditCellState<R> extends Position {
   readonly mode: 'EDIT';
   readonly row: R;
   readonly originalRow: R;
+  readonly metadata: Record<string, unknown> | undefined;
 }
 
 export type DefaultColumnOptions<R, SR> = Pick<
@@ -873,7 +874,8 @@ function DataGrid<R, SR, K extends Key>(
         rowIdx,
         mode: 'EDIT',
         row,
-        originalRow: row
+        originalRow: row,
+        metadata: undefined
       }));
     }
   }
@@ -908,9 +910,10 @@ function DataGrid<R, SR, K extends Key>(
     );
   }
 
-  function selectCell(position: Position, { enableEditor, shiftKey }: {
+  function selectCell(position: Position, { enableEditor, shiftKey, metadata }: {
     enableEditor?: Maybe<boolean>
     shiftKey?: Maybe<boolean>
+    metadata?: Record<string, unknown>
   } = {}): void {
     if (!isCellWithinSelectionBounds(position)) return;
     commitEditorChanges();
@@ -919,7 +922,7 @@ function DataGrid<R, SR, K extends Key>(
 
     if (enableEditor && isCellEditable(position)) {
       const row = rows[position.rowIdx];
-      setSelectedPosition({ ...position, mode: 'EDIT', row, originalRow: row });
+      setSelectedPosition({ ...position, mode: 'EDIT', row, originalRow: row, metadata });
     } else if (samePosition) {
       // Avoid re-renders if the selected cell state is the same
       scrollIntoView(getCellToScroll(gridRef.current!));
@@ -1086,7 +1089,7 @@ function DataGrid<R, SR, K extends Key>(
   function getCellEditor(rowIdx: number) {
     if (selectedPosition.rowIdx !== rowIdx || selectedPosition.mode === 'SELECT') return;
 
-    const { idx, row } = selectedPosition;
+    const { idx, row, metadata } = selectedPosition;
     const column = columns[idx];
     const colSpan = getColSpan(column, lastFrozenColumnIndex, { type: 'ROW', row });
 
@@ -1126,6 +1129,7 @@ function DataGrid<R, SR, K extends Key>(
         closeEditor={closeEditor}
         onKeyDown={onCellKeyDown}
         navigate={navigate}
+        metadata={metadata}
       />
     );
   }

@@ -138,6 +138,7 @@ export interface RenderEditCellProps<TRow, TSummaryRow = unknown> {
   rowIdx: number;
   onRowChange: (row: TRow, commitChanges?: boolean) => void;
   onClose: (commitChanges?: boolean, shouldFocusCell?: boolean) => void;
+  metadata: Record<string, unknown> | undefined;
 }
 
 export interface RenderHeaderCellProps<TRow, TSummaryRow = unknown> {
