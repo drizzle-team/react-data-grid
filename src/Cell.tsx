@@ -141,7 +141,8 @@ function Cell<R, SR>(
         rowIdx,
         isCellEditable: isEditable,
         tabIndex: childTabIndex,
-        onRowChange: handleRowChange
+        onRowChange: handleRowChange,
+        selectCell,
       })}
     </div>
   );

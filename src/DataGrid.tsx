@@ -1130,6 +1130,7 @@ function DataGrid<R, SR, K extends Key>(
         onKeyDown={onCellKeyDown}
         navigate={navigate}
         metadata={metadata}
+        selectCell={selectCell}
       />
     );
   }

@@ -114,6 +114,14 @@ export interface RenderCellProps<TRow, TSummaryRow = unknown> {
   isCellEditable: boolean;
   tabIndex: number;
   onRowChange: (row: TRow) => void;
+  selectCell: (
+    position: Position,
+    options?: {
+      enableEditor?: Maybe<boolean>;
+      shiftKey?: Maybe<boolean>;
+      metadata?: Record<string, unknown>;
+    }
+  ) => void;
 }
 
 export interface RenderSummaryCellProps<TSummaryRow, TRow = unknown> {
@@ -241,6 +249,7 @@ export interface BaseRenderRowProps<TRow, TSummaryRow = unknown>
     options?: {
       enableEditor?: Maybe<boolean>;
       shiftKey?: Maybe<boolean>;
+      metadata?: Record<string, unknown>;
     }
   ) => void;
 }
