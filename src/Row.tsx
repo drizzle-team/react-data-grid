@@ -1,4 +1,4 @@
-import { forwardRef, memo, useMemo, type RefAttributes } from 'react';
+import { forwardRef, Fragment, memo, useMemo, type RefAttributes } from 'react';
 import clsx from 'clsx';
 
 import { RowSelectionProvider, useLatestFunc, type RowSelectionContextValue } from './hooks';
@@ -86,7 +86,11 @@ function Row<R, SR>(
     } : undefined;
 
     if (isCellSelected && selectedCellEditor) {
-      cells.push(selectedCellEditor);
+      cells.push(
+        <Fragment key={column.key}>
+          {selectedCellEditor}
+        </Fragment>
+      );
     } else {
       cells.push(
         renderCell(column.key, {
