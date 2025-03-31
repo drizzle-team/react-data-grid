@@ -1224,10 +1224,11 @@ function DataGrid<R, SR, K extends Key>(
           selectCell: selectCellLatest,
           selectedCellEditor: getCellEditor(rowIdx),
           rangeSelectionMode: enableRangeSelection,
-          onCellMouseDown({ column }, { shiftKey }) {
+          onCellMouseDown({ column }, { shiftKey, button }) {
             if (!enableRangeSelection) return;
 
-            if (!shiftKey) {
+            // only handle left mouse click
+            if (!shiftKey && button === 0) {
               setIsMouseRangeSelectionMode(true);
 
               // set the initial range selection
