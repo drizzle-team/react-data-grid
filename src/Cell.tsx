@@ -11,8 +11,6 @@ const cellCopied = css`
   }
 `;
 
-const cellCopiedClassname = `rdg-cell-copied ${cellCopied}`;
-
 const cellDraggedOver = css`
   @layer rdg.Cell {
     background-color: #ccccff;
@@ -31,7 +29,6 @@ function Cell<R, SR>(
     colSpan,
     isCellSelected,
     selectedBorder,
-    isCopied,
     isDraggedOver,
     row,
     rowIdx,
@@ -55,7 +52,6 @@ function Cell<R, SR>(
   className = getCellClassname(
     column,
     {
-      [cellCopiedClassname]: isCopied,
       [cellDraggedOverClassname]: isDraggedOver
     },
     typeof cellClass === 'function' ? cellClass(row) : cellClass,
@@ -64,7 +60,7 @@ function Cell<R, SR>(
   const isEditable = isCellEditableUtil(column, row);
 
   function selectCellWrapper(enableEditor?: boolean, shiftKey?: boolean) {
-    selectCell({ rowIdx, idx: column.idx }, { enableEditor, shiftKey});
+    selectCell({ rowIdx, idx: column.idx }, { enableEditor, shiftKey });
   }
 
   function handleClick(event: React.MouseEvent<HTMLDivElement>) {
@@ -102,7 +98,7 @@ function Cell<R, SR>(
     function onMouseEvent(event: React.MouseEvent<HTMLDivElement>) {
       if (handler) {
         const cellEvent = createCellEvent(event);
-        handler({ rowIdx,  row, column, selectCell: selectCellWrapper }, cellEvent);
+        handler({ rowIdx, row, column, selectCell: selectCellWrapper }, cellEvent);
       }
     }
     return onMouseEvent;
@@ -142,7 +138,7 @@ function Cell<R, SR>(
         isCellEditable: isEditable,
         tabIndex: childTabIndex,
         onRowChange: handleRowChange,
-        selectCell,
+        selectCell
       })}
     </div>
   );

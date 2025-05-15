@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { faker } from '@faker-js/faker';
+import { createLazyFileRoute } from '@tanstack/react-router';
 import { css } from '@linaria/core';
+
 import DataGrid, {
   SelectCellFormatter,
   SelectColumn,
@@ -10,9 +12,15 @@ import DataGrid, {
   type SortColumn
 } from '../../src';
 import { textEditorClassname } from '../../src/editors/textEditor';
-import type { Direction, MultiCopyEvent, MultiPasteEvent } from '../../src/types';
+import type {
+  CalculatedColumn,
+  CellCopyArgs,
+  CellPasteArgs,
+  Direction,
+  MultiCellCopyArgs,
+  MultiCellPasteArgs
+} from '../../src/types';
 import { useDirection } from '../directionContext';
-import { createLazyFileRoute } from '@tanstack/react-router';
 
 export const Route = createLazyFileRoute('/RangeSelection')({
   component: RangeSelection
@@ -290,7 +298,7 @@ export default function RangeSelection() {
   const countries = useMemo((): readonly string[] => {
     return [...new Set(rows.map((r) => r.country))].sort(new Intl.Collator().compare);
   }, [rows]);
-    const direction = useDirection();
+  const direction = useDirection();
   const columns = useMemo(() => getColumns(countries, direction), [countries, direction]);
   const summaryRows = useMemo((): readonly SummaryRow[] => {
     return [
@@ -314,57 +322,105 @@ export default function RangeSelection() {
       return 0;
     });
   }, [rows, sortColumns]);
-  function getRangeSize(start: number, end: number) {
-    return Math.abs(start - end) + 1;
-  }
-  function handleMultiCopy({ sourceRows, sourceColumnKeys }: MultiCopyEvent<Row>): void {
-    if (window.isSecureContext) {
-      const rows: string[] = [];
-      for (const row of sourceRows) {
-        rows.push(sourceColumnKeys.map((c) => row[c as keyof Row]).join('\t'));
-      }
-      navigator.clipboard.writeText(rows.join('\n'));
+
+  const [copiedCell, setCopiedCell] = useState<{
+    readonly row: Row;
+    readonly column: CalculatedColumn<Row, SummaryRow>;
+  } | null>(null);
+
+  function handleCellPaste(
+    { row, column }: CellCopyArgs<Row, SummaryRow>,
+    event: React.ClipboardEvent<HTMLDivElement>
+  ): Row {
+    const targetColumnKey = column.key;
+
+    if (copiedCell !== null) {
+      const sourceColumnKey = copiedCell.column.key;
+      const sourceRow = copiedCell.row;
+      return { ...row, [targetColumnKey]: sourceRow[sourceColumnKey as keyof Row] };
     }
+
+    const copiedText = event.clipboardData.getData('text/plain');
+    if (copiedText !== '') {
+      return { ...row, [targetColumnKey]: copiedText };
+    }
+
+    return row;
   }
-  function handleMultiPaste(pasteEvent: MultiPasteEvent) {
-    const sourceRange = pasteEvent.copiedRange;
-    const destinationRange = pasteEvent.targetRange;
 
-    const newRows = [...rows];
-    const sourceStartRow = Math.min(sourceRange.startRowIdx, sourceRange.endRowIdx);
-    const sourceStartCol = Math.min(sourceRange.startColumnIdx, sourceRange.endColumnIdx);
-    const destinationStartRow = Math.min(destinationRange.startRowIdx, destinationRange.endRowIdx);
-    const destinationStartCol = Math.min(
-      destinationRange.startColumnIdx,
-      destinationRange.endColumnIdx
-    );
+  function handleCellCopy(
+    { row, column }: CellPasteArgs<Row, SummaryRow>,
+    event: React.ClipboardEvent<HTMLDivElement>
+  ): void {
+    // copy highlighted text only
+    if (window.getSelection()?.isCollapsed === false) {
+      setCopiedCell(null);
+      return;
+    }
 
-    const sourceRowCount = getRangeSize(sourceRange.startRowIdx, sourceRange.endRowIdx);
-    const sourceColCount = getRangeSize(sourceRange.startColumnIdx, sourceRange.endColumnIdx);
-  
-    for (let i = 0; i < sourceRowCount; i++) {
-      for (let j = 0; j < sourceColCount; j++) {
-        const sourceRowIdx = sourceStartRow + i;
-        const sourceColIdx = sourceStartCol + j;
-        const destinationRowIdx = destinationStartRow + i;
-        const destinationColIdx = destinationStartCol + j;
-  
-        if (destinationRowIdx < newRows.length && destinationColIdx < columns.length) {
-          const sourceColumnKey = columns[sourceColIdx]?.key;
-          const destinationColumnKey = columns[destinationColIdx]?.key;
-  
-          if (sourceColumnKey && destinationColumnKey) {
-            newRows[destinationRowIdx] = {
-              ...newRows[destinationRowIdx], // Ensure immutability
-              [destinationColumnKey]: newRows[sourceRowIdx]?.[sourceColumnKey as keyof Row],
-            };
-          }
+    setCopiedCell({ row, column });
+    event.clipboardData.setData('text/plain', String(row[column.key as keyof Row]));
+    event.preventDefault();
+  }
+
+  function handleMultiCellCopy(
+    { rows, columns }: MultiCellCopyArgs<Row, SummaryRow>,
+    event: React.ClipboardEvent<HTMLDivElement>
+  ) {
+    // copy highlighted text only
+    if (window.getSelection()?.isCollapsed === false) {
+      setCopiedCell(null);
+      return;
+    }
+
+    const copiedText = rows
+      .map((row) => {
+        return columns.map((column) => String(row[column.key as keyof Row])).join('\t');
+      })
+      .join('\n');
+
+      console.log('copiedText', copiedText);
+
+    setCopiedCell({ row: rows[0], column: columns[0] });
+    event.clipboardData.setData('text/plain', copiedText);
+    event.preventDefault();
+  }
+
+  function handleMultiCellPaste(
+    { rows, columns }: MultiCellPasteArgs<Row, SummaryRow>,
+    event: React.ClipboardEvent<HTMLDivElement>
+  ): Row[] {
+    console.log('pastedRows');
+    const copiedText = event.clipboardData.getData('text/plain').trim();
+    if (!copiedText) return [];
+
+    // biome-ignore lint/performance/useTopLevelRegex: <explanation>
+    const pastedRows = copiedText.split(/\r?\n/).map((line) => line.split('\t'));
+
+
+    const updatedRows: Row[] = [];
+
+    rows.forEach((row, rowIndex) => {
+      if (rowIndex >= pastedRows.length) return;
+
+      const pastedRow = pastedRows[rowIndex];
+      const updatedRow = { ...row };
+
+      columns.forEach((column, colIndex) => {
+        if (colIndex < pastedRow.length) {
+          const key = column.key as keyof Row;
+          const newValue = pastedRow[colIndex];
+          // @ts-expect-error - Type 'string' is not assignable to type 'number | string | boolean'
+          updatedRow[key] = newValue;
         }
-      }
-    }
-  
-    setRows(newRows); // Update the rows
+      });
+
+      updatedRows.push(updatedRow);
+    });
+
+    return updatedRows;
   }
+
   return (
     <DataGrid
       style={{ userSelect: 'none' }}
@@ -387,8 +443,8 @@ export default function RangeSelection() {
       enableRangeSelection
       selectionLeftBoundaryColIdx={0}
       selectionTopBoundaryRowIdx={-1}
-      onMultiCopy={handleMultiCopy}
-      onMultiPaste={handleMultiPaste}
+      onMultiCellCopy={handleMultiCellCopy}
+      onMultiCellPaste={handleMultiCellPaste}
       renderers={{ noRowsFallback: <h1>No rows</h1> }}
     />
   );

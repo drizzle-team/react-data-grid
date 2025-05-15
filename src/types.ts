@@ -170,7 +170,6 @@ export interface CellRendererProps<TRow, TSummaryRow>
     > {
   column: CalculatedColumn<TRow, TSummaryRow>;
   colSpan: number | undefined;
-  isCopied: boolean;
   isDraggedOver: boolean;
   isCellSelected: boolean;
   selectedBorder: { top: boolean; bottom: boolean; left: boolean; right: boolean } | undefined;
@@ -191,6 +190,8 @@ export type CellEvent<E extends React.SyntheticEvent<HTMLDivElement>> = E & {
 export type CellMouseEvent = CellEvent<React.MouseEvent<HTMLDivElement>>;
 
 export type CellKeyboardEvent = CellEvent<React.KeyboardEvent<HTMLDivElement>>;
+
+export type CellClipboardEvent = React.ClipboardEvent<HTMLDivElement>;
 
 export interface CellClickArgs<TRow, TSummaryRow = unknown> {
   rowIdx: number;
@@ -258,7 +259,6 @@ export interface RenderRowProps<TRow, TSummaryRow = unknown>
   extends BaseRenderRowProps<TRow, TSummaryRow> {
   row: TRow;
   lastFrozenColumnIndex: number;
-  copiedCellIdx: number | undefined;
   draggedOverCellIdx: number | undefined;
   selectedCellEditor: ReactElement<RenderEditCellProps<TRow>> | undefined;
   onRowChange: (column: CalculatedColumn<TRow, TSummaryRow>, rowIdx: number, newRow: TRow) => void;
@@ -299,33 +299,34 @@ export interface FillEvent<TRow> {
   targetRow: TRow;
 }
 
-export interface CopyEvent<TRow> {
-  sourceColumnKey: string;
-  sourceRow: TRow;
-}
-
-export interface PasteEvent<TRow> {
-  sourceColumnKey: string;
-  sourceRow: TRow;
-  targetColumnKey: string;
-  targetRow: TRow;
-}
-
-export interface MultiPasteEvent {
-  copiedRange: CellsRange;
-  targetRange: CellsRange;
-}
 export interface CellsRange {
   startRowIdx: number;
   startColumnIdx: number;
   endRowIdx: number;
   endColumnIdx: number;
 }
-export interface MultiCopyEvent<TRow> {
-  cellsRange: CellsRange;
-  sourceColumnKeys: string[];
-  sourceRows: TRow[];
+
+interface CellCopyPasteArgs<TRow, TSummaryRow = unknown> {
+  column: CalculatedColumn<TRow, TSummaryRow>;
+  row: TRow;
 }
+
+export type CellCopyArgs<TRow, TSummaryRow = unknown> = CellCopyPasteArgs<TRow, TSummaryRow>;
+export type CellPasteArgs<TRow, TSummaryRow = unknown> = CellCopyPasteArgs<TRow, TSummaryRow>;
+
+interface MultiCellCopyPasteArgs<TRow, TSummaryRow = unknown> {
+  columns: CalculatedColumn<TRow, TSummaryRow>[];
+  rows: TRow[];
+}
+
+export type MultiCellCopyArgs<TRow, TSummaryRow = unknown> = MultiCellCopyPasteArgs<
+  TRow,
+  TSummaryRow
+>;
+export type MultiCellPasteArgs<TRow, TSummaryRow = unknown> = MultiCellCopyPasteArgs<
+  TRow,
+  TSummaryRow
+>;
 
 export interface GroupRow<TRow> {
   readonly childRows: readonly TRow[];
