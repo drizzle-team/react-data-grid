@@ -825,7 +825,10 @@ function DataGrid<R, SR, K extends Key>(
     }
 
     if (enableRangeSelection && onMultiCellPaste) {
-      const { startRowIdx, endRowIdx, startColumnIdx, endColumnIdx } = selectedRange;
+      const startRowIdx = Math.min(selectedRange.startRowIdx, selectedRange.endRowIdx);
+      const endRowIdx = Math.max(selectedRange.startRowIdx, selectedRange.endRowIdx);
+      const startColumnIdx = Math.min(selectedRange.startColumnIdx, selectedRange.endColumnIdx);
+      const endColumnIdx = Math.max(selectedRange.startColumnIdx, selectedRange.endColumnIdx);
       const rowsToPaste = rows.slice(startRowIdx, endRowIdx + 1);
       const columnsToPaste = columns.slice(startColumnIdx, endColumnIdx + 1);
       const updatedRows = onMultiCellPaste?.(
@@ -835,7 +838,7 @@ function DataGrid<R, SR, K extends Key>(
         },
         event
       );
-      if (updatedRows) {
+      if (updatedRows && updatedRows.length > 0) {
         const newRows = [...rows];
         for (let i = startRowIdx; i <= endRowIdx; i++) {
           const updatedRow = updatedRows[i - startRowIdx];
