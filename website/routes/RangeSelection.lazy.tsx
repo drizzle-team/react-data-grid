@@ -379,8 +379,6 @@ export default function RangeSelection() {
       })
       .join('\n');
 
-      console.log('copiedText', copiedText);
-
     setCopiedCell({ row: rows[0], column: columns[0] });
     event.clipboardData.setData('text/plain', copiedText);
     event.preventDefault();
@@ -390,7 +388,6 @@ export default function RangeSelection() {
     { rows, columns }: MultiCellPasteArgs<Row, SummaryRow>,
     event: React.ClipboardEvent<HTMLDivElement>
   ): Row[] {
-    console.log('pastedRows');
     const copiedText = event.clipboardData.getData('text/plain').trim();
     if (!copiedText) return [];
 

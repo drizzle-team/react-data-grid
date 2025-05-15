@@ -820,7 +820,7 @@ function DataGrid<R, SR, K extends Key>(
   }
 
   function handleCellPaste(event: CellClipboardEvent) {
-    if (!onRowsChange || !isCellEditable(selectedPosition)) {
+    if (!onRowsChange || !isCellEditable(selectedPosition) || selectedPosition.mode === 'EDIT') {
       return;
     }
 
@@ -831,7 +831,7 @@ function DataGrid<R, SR, K extends Key>(
       const endColumnIdx = Math.max(selectedRange.startColumnIdx, selectedRange.endColumnIdx);
       const rowsToPaste = rows.slice(startRowIdx, endRowIdx + 1);
       const columnsToPaste = columns.slice(startColumnIdx, endColumnIdx + 1);
-      const updatedRows = onMultiCellPaste?.(
+      const updatedRows = onMultiCellPaste(
         {
           rows: rowsToPaste,
           columns: columnsToPaste
@@ -878,7 +878,10 @@ function DataGrid<R, SR, K extends Key>(
 
     if (
       isCellEditable(selectedPosition) &&
-      isDefaultCellInput(event, onCellPaste != null || onMultiCellPaste != null)
+      isDefaultCellInput(
+        event,
+        enableRangeSelection ? onMultiCellPaste != null : onCellPaste != null
+      )
     ) {
       setSelectedPosition(({ idx, rowIdx }) => ({
         idx,
