@@ -846,10 +846,12 @@ function DataGrid<R, SR, K extends Key>(
             newRows[i] = updatedRow;
           }
         }
-        onRowsChange(newRows, {
-          indexes: Array.from({ length: endRowIdx - startRowIdx + 1 }, (_, i) => i + startRowIdx),
-          column: columns[startColumnIdx]
-        });
+        for (const column of columnsToPaste) {
+          onRowsChange(newRows, {
+            indexes: Array.from({ length: endRowIdx - startRowIdx + 1 }, (_, i) => i + startRowIdx),
+            column
+          });
+        }
       }
     } else if (onCellPaste) {
       const { idx, rowIdx } = selectedPosition;
