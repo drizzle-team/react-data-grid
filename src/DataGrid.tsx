@@ -803,7 +803,10 @@ function DataGrid<R, SR, K extends Key>(
     if (!selectedCellIsWithinViewportBounds) return;
 
     if (enableRangeSelection) {
-      const { startRowIdx, endRowIdx, startColumnIdx, endColumnIdx } = selectedRange;
+      const startRowIdx = Math.min(selectedRange.startRowIdx, selectedRange.endRowIdx);
+      const endRowIdx = Math.max(selectedRange.startRowIdx, selectedRange.endRowIdx);
+      const startColumnIdx = Math.min(selectedRange.startColumnIdx, selectedRange.endColumnIdx);
+      const endColumnIdx = Math.max(selectedRange.startColumnIdx, selectedRange.endColumnIdx);
       const rowsToCopy = rows.slice(startRowIdx, endRowIdx + 1);
       const columnsToCopy = columns.slice(startColumnIdx, endColumnIdx + 1);
       onMultiCellCopy?.(
