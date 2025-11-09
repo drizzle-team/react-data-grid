@@ -81,6 +81,7 @@ import { default as defaultRenderSortStatus } from './sortStatus';
 import {
   focusSinkClassname,
   focusSinkHeaderAndSummaryClassname,
+  rangeSelectionClassname,
   rootClassname,
   viewportDraggingClassname
 } from './style/core';
@@ -1347,7 +1348,8 @@ function DataGrid<R, SR, K extends Key>(
       className={clsx(
         rootClassname,
         {
-          [viewportDraggingClassname]: isDragging
+          [viewportDraggingClassname]: isDragging,
+          [rangeSelectionClassname]: isMouseRangeSelectionMode
         },
         className
       )}

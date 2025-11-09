@@ -107,6 +107,14 @@ const root = css`
 
 export const rootClassname = `rdg ${root}`;
 
+const rangeSelection = css`
+  @layer rdg.Root {
+    user-select: none;
+  }
+`;
+
+export const rangeSelectionClassname = `rdg-range-selection ${rangeSelection}`;
+
 const viewportDragging = css`
   @layer rdg.Root {
     user-select: none;

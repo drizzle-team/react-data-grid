@@ -3,7 +3,7 @@ import { createLazyFileRoute } from '@tanstack/react-router';
 import { css } from '@linaria/core';
 
 import DataGrid, { SelectColumn, textEditor } from '../../src';
-import type { Column, CopyEvent, FillEvent, PasteEvent } from '../../src';
+import type { CellCopyArgs, CellPasteArgs, Column, FillEvent } from '../../src';
 import { textEditorClassname } from '../../src/editors/textEditor';
 import { useDirection } from '../directionContext';
 
@@ -176,30 +176,31 @@ function AllFeatures() {
     return { ...targetRow, [columnKey]: sourceRow[columnKey as keyof Row] };
   }
 
-  function handlePaste({
-    sourceColumnKey,
-    sourceRow,
-    targetColumnKey,
-    targetRow
-  }: PasteEvent<Row>): Row {
-    const incompatibleColumns = ['email', 'zipCode', 'date'];
-    if (
-      sourceColumnKey === 'avatar' ||
-      ['id', 'avatar'].includes(targetColumnKey) ||
-      ((incompatibleColumns.includes(targetColumnKey) ||
-        incompatibleColumns.includes(sourceColumnKey)) &&
-        sourceColumnKey !== targetColumnKey)
-    ) {
-      return targetRow;
+  function handleCellPaste(
+    { row, column }: CellCopyArgs<Row>,
+    event: React.ClipboardEvent<HTMLDivElement>
+  ): Row {
+    const targetColumnKey = column.key;
+
+    const copiedText = event.clipboardData.getData('text/plain');
+    if (copiedText !== '') {
+      return { ...row, [targetColumnKey]: copiedText };
     }
 
-    return { ...targetRow, [targetColumnKey]: sourceRow[sourceColumnKey as keyof Row] };
+    return row;
   }
 
-  function handleCopy({ sourceRow, sourceColumnKey }: CopyEvent<Row>): void {
-    if (window.isSecureContext) {
-      navigator.clipboard.writeText(sourceRow[sourceColumnKey as keyof Row]);
+  function handleCellCopy(
+    { row, column }: CellPasteArgs<Row>,
+    event: React.ClipboardEvent<HTMLDivElement>
+  ): void {
+    // copy highlighted text only
+    if (window.getSelection()?.isCollapsed === false) {
+      return;
     }
+
+    event.clipboardData.setData('text/plain', row[column.key as keyof Row]);
+    event.preventDefault();
   }
 
   return (
@@ -209,8 +210,8 @@ function AllFeatures() {
       rowKeyGetter={rowKeyGetter}
       onRowsChange={setRows}
       onFill={handleFill}
-      onCopy={handleCopy}
-      onPaste={handlePaste}
+      onCellCopy={handleCellCopy}
+      onCellPaste={handleCellPaste}
       rowHeight={30}
       selectedRows={selectedRows}
       isRowSelectionDisabled={(row) => row.id === 'id_2'}

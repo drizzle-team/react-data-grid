@@ -175,7 +175,8 @@ export default function EditCell<R, SR>({
               isCellEditable: true,
               tabIndex: -1,
               onRowChange: onEditorRowChange,
-              selectCell
+              selectCell,
+              metadata
             })}
         </>
       )}

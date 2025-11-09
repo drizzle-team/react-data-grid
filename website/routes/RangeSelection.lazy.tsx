@@ -420,7 +420,6 @@ export default function RangeSelection() {
 
   return (
     <DataGrid
-      style={{ userSelect: 'none' }}
       rowKeyGetter={rowKeyGetter}
       columns={columns}
       rows={sortedRows}

@@ -122,6 +122,7 @@ export interface RenderCellProps<TRow, TSummaryRow = unknown> {
       metadata?: Record<string, unknown>;
     }
   ) => void;
+  metadata: Record<string, unknown> | undefined;
 }
 
 export interface RenderSummaryCellProps<TSummaryRow, TRow = unknown> {
@@ -169,6 +170,7 @@ export interface CellRendererProps<TRow, TSummaryRow>
       | 'onMouseEnter'
     > {
   column: CalculatedColumn<TRow, TSummaryRow>;
+  metadata: Record<string, unknown> | undefined;
   colSpan: number | undefined;
   isDraggedOver: boolean;
   isCellSelected: boolean;
