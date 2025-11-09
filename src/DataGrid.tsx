@@ -1,3 +1,4 @@
+import type { Key, KeyboardEvent, RefAttributes } from 'react';
 import {
   forwardRef,
   useCallback,
@@ -7,7 +8,6 @@ import {
   useRef,
   useState
 } from 'react';
-import type { Key, KeyboardEvent, RefAttributes } from 'react';
 import { flushSync } from 'react-dom';
 import clsx from 'clsx';
 
@@ -121,6 +121,7 @@ export interface DataGridHandle {
       shiftKey?: Maybe<boolean>;
     }
   ) => void;
+  resetSelection: () => void;
 }
 
 type SharedDivProps = Pick<
@@ -627,7 +628,12 @@ function DataGrid<R, SR, K extends Key>(
         setScrollToPosition({ idx: scrollToIdx, rowIdx: scrollToRowIdx });
       }
     },
-    selectCell
+    selectCell,
+    resetSelection() {
+      setSelectedPosition({ idx: -1, rowIdx: minRowIdx - 1, mode: 'SELECT' });
+      setDraggedOverRowIdx(undefined);
+      setSelectedRange(initialSelectedRange);
+    }
   }));
 
   useEffect(() => {
@@ -721,6 +727,7 @@ function DataGrid<R, SR, K extends Key>(
       switch (event.key) {
         case 'ArrowUp':
           if (selectedRange.endRowIdx > 0) {
+            event.preventDefault();
             setSelectedRangeWithBoundary({
               ...selectedRange,
               endRowIdx: selectedRange.endRowIdx - 1
@@ -729,6 +736,7 @@ function DataGrid<R, SR, K extends Key>(
           break;
         case 'ArrowDown':
           if (selectedRange.endRowIdx < rows.length - 1) {
+            event.preventDefault();
             setSelectedRangeWithBoundary({
               ...selectedRange,
               endRowIdx: selectedRange.endRowIdx + 1
@@ -737,6 +745,7 @@ function DataGrid<R, SR, K extends Key>(
           break;
         case 'ArrowRight':
           if (selectedRange.endColumnIdx < columns.length - 1) {
+            event.preventDefault();
             setSelectedRangeWithBoundary({
               ...selectedRange,
               endColumnIdx: selectedRange.endColumnIdx + 1
@@ -745,6 +754,7 @@ function DataGrid<R, SR, K extends Key>(
           break;
         case 'ArrowLeft':
           if (selectedRange.endColumnIdx > 0) {
+            event.preventDefault();
             setSelectedRangeWithBoundary({
               ...selectedRange,
               endColumnIdx: selectedRange.endColumnIdx - 1
@@ -1349,7 +1359,7 @@ function DataGrid<R, SR, K extends Key>(
         rootClassname,
         {
           [viewportDraggingClassname]: isDragging,
-          [rangeSelectionClassname]: isMouseRangeSelectionMode
+          [rangeSelectionClassname]: enableRangeSelection
         },
         className
       )}
