@@ -109,7 +109,7 @@ export const rootClassname = `rdg ${root}`;
 
 const rangeSelection = css`
   @layer rdg.Root {
-    *::selection {
+    & .${cell}::selection {
       background: transparent;
     }
   }
