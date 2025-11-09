@@ -1290,6 +1290,7 @@ function DataGrid<R, SR, K extends Key>(
           onCellMouseUp({ column }) {
             if (!enableRangeSelection) return;
 
+            window.getSelection()?.removeAllRanges();
             setIsMouseRangeSelectionMode(false);
             // select final cell
             selectCellLatest(

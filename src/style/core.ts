@@ -104,11 +104,13 @@ const root = css`
     }
 
     /* Prevent text selection when dragging to select cells */
-    & .${cell}::selection {
-      background: transparent;
+    .${cell}:not(.rdg-editor-container)::selection,
+    .${cell}:not(.rdg-editor-container) *::selection {
+      background: transparent !important;
     }
-    & .${cell}::-moz-selection {
-      background: transparent;
+    .${cell}:not(.rdg-editor-container)::-moz-selection,
+    .${cell}:not(.rdg-editor-container) *::-moz-selection {
+      background: transparent !important;
     }
   }
 `;
