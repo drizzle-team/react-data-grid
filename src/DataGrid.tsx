@@ -81,7 +81,6 @@ import { default as defaultRenderSortStatus } from './sortStatus';
 import {
   focusSinkClassname,
   focusSinkHeaderAndSummaryClassname,
-  rangeSelectionClassname,
   rootClassname,
   viewportDraggingClassname
 } from './style/core';
@@ -852,7 +851,7 @@ function DataGrid<R, SR, K extends Key>(
         },
         event
       );
-      if (updatedRows && updatedRows.length > 0) {
+      if (updatedRows.length > 0) {
         const newRows = [...rows];
         for (let i = startRowIdx; i <= endRowIdx; i++) {
           const updatedRow = updatedRows[i - startRowIdx];
@@ -1358,8 +1357,7 @@ function DataGrid<R, SR, K extends Key>(
       className={clsx(
         rootClassname,
         {
-          [viewportDraggingClassname]: isDragging,
-          [rangeSelectionClassname]: enableRangeSelection
+          [viewportDraggingClassname]: isDragging
         },
         className
       )}

@@ -102,20 +102,18 @@ const root = css`
         border-block-start: 2px solid var(--rdg-summary-border-color);
       }
     }
-  }
-`;
 
-export const rootClassname = `rdg ${root}`;
-
-const rangeSelection = css`
-  @layer rdg.Root {
+    /* Prevent text selection when dragging to select cells */
     & .${cell}::selection {
+      background: transparent;
+    }
+    & .${cell}::-moz-selection {
       background: transparent;
     }
   }
 `;
 
-export const rangeSelectionClassname = `rdg-range-selection ${rangeSelection}`;
+export const rootClassname = `rdg ${root}`;
 
 const viewportDragging = css`
   @layer rdg.Root {
