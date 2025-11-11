@@ -1204,6 +1204,20 @@ function DataGrid<R, SR, K extends Key>(
     return viewportColumns;
   }
 
+  // Handle mouse up event to exit mouse range selection mode (when mouse up happens outside the grid)
+  useEffect(() => {
+    function handleWindowMouseUp() {
+      if (isMouseRangeSelectionMode) {
+        setIsMouseRangeSelectionMode(false);
+      }
+    }
+
+    window.addEventListener('mouseup', handleWindowMouseUp);
+    return () => {
+      window.removeEventListener('mouseup', handleWindowMouseUp);
+    };
+  }, [isMouseRangeSelectionMode]);
+
   function getViewportRows() {
     const rowElements: React.ReactNode[] = [];
 
