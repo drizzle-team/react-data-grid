@@ -629,6 +629,7 @@ function DataGrid<R, SR, K extends Key>(
     },
     selectCell,
     resetSelection() {
+      if (selectedPosition.mode === 'EDIT') return;
       setSelectedPosition({ idx: -1, rowIdx: minRowIdx - 1, mode: 'SELECT' });
       setDraggedOverRowIdx(undefined);
       setSelectedRange(initialSelectedRange);
