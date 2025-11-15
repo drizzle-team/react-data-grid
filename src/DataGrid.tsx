@@ -1288,12 +1288,15 @@ function DataGrid<R, SR, K extends Key>(
           selectCell: selectCellLatest,
           selectedCellEditor: getCellEditor(rowIdx),
           rangeSelectionMode: enableRangeSelection,
-          onCellMouseDownCapture({ column }, { shiftKey, button }) {
+          onCellMouseDownCapture({ column }, { shiftKey, button, currentTarget }) {
             if (!enableRangeSelection) return;
 
             // only handle left mouse click
             if (!shiftKey && button === 0) {
               setIsMouseRangeSelectionMode(true);
+
+              // set selection focusNode to the cell (because user-select is none) - firefox needs selection range
+              window.getSelection()?.setBaseAndExtent(currentTarget, 0, currentTarget, 0);
 
               // set the initial range selection
               if (!isCellWithinSelectionBounds({ idx: column.idx, rowIdx })) {
