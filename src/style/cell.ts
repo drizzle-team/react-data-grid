@@ -20,7 +20,8 @@ export const cell = css`
     white-space: nowrap;
     overflow: clip;
     text-overflow: ellipsis;
-    outline: none;
+    /* !important to override firefox user-agent stylesheet */
+    outline: none !important; 
 
     overflow: visible;
 
