@@ -28,8 +28,8 @@ function Row<R, SR>(
     setDraggedOverRowIdx,
     onMouseEnter,
     onRowChange,
-    onCellMouseDown,
-    onCellMouseUp,
+    onCellMouseDownCapture,
+    onCellMouseUpCapture,
     onCellMouseEnter,
     selectCell,
     rangeSelectionMode,
@@ -68,21 +68,24 @@ function Row<R, SR>(
       index += colSpan - 1;
     }
 
-    const isCellSelected =
-      selectedCellIdx === idx;
+    const isCellSelected = selectedCellIdx === idx;
 
-    const isCellInSelectedRange = (rangeSelectionMode &&
+    const isCellInSelectedRange =
+      rangeSelectionMode &&
       isValueInBetween(rowIdx, selectedRange.startRowIdx, selectedRange.endRowIdx) &&
-      isValueInBetween(idx, selectedRange.startColumnIdx, selectedRange.endColumnIdx))
+      isValueInBetween(idx, selectedRange.startColumnIdx, selectedRange.endColumnIdx);
 
-    const selectedBorder = rangeSelectionMode && isCellInSelectedRange
-     ? getBorderObject(rowIdx, idx, selectedRange) 
-     : !rangeSelectionMode && isCellSelected ? {
-      top: true,
-      bottom: true,
-      left: true,
-      right: true
-    } : undefined;
+    const selectedBorder =
+      rangeSelectionMode && isCellInSelectedRange
+        ? getBorderObject(rowIdx, idx, selectedRange)
+        : !rangeSelectionMode && isCellSelected
+          ? {
+              top: true,
+              bottom: true,
+              left: true,
+              right: true
+            }
+          : undefined;
 
     if (isCellSelected && selectedCellEditor) {
       cells.push(selectedCellEditor);
@@ -96,14 +99,14 @@ function Row<R, SR>(
           isDraggedOver: draggedOverCellIdx === idx,
           isCellSelected: rangeSelectionMode ? isCellInSelectedRange : isCellSelected,
           selectedBorder,
-          onClick: onCellClick,
-          onDoubleClick: onCellDoubleClick,
-          onContextMenu: onCellContextMenu,
+          onCellClick,
+          onCellDoubleClick,
+          onCellContextMenu,
           onRowChange: handleRowChange,
           selectCell,
-          onMouseDownCapture: onCellMouseDown,
-          onMouseUpCapture: onCellMouseUp,
-          onMouseEnter: onCellMouseEnter,
+          onCellMouseDownCapture,
+          onCellMouseUpCapture,
+          onCellMouseEnter
         })
       );
     }

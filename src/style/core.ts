@@ -51,6 +51,7 @@ const root = css`
       --rdg-cell-frozen-box-shadow: -2px 0 5px -2px rgba(136, 136, 136, 0.3);
     }
 
+    user-select: none;
     display: grid;
 
     color-scheme: var(--rdg-color-scheme, light dark);
@@ -101,16 +102,6 @@ const root = css`
       > .${cell} {
         border-block-start: 2px solid var(--rdg-summary-border-color);
       }
-    }
-
-    /* Prevent text selection when dragging to select cells */
-    .${cell}:not(.rdg-editor-container)::selection,
-    .${cell}:not(.rdg-editor-container) *::selection {
-      background: transparent !important;
-    }
-    .${cell}:not(.rdg-editor-container)::-moz-selection,
-    .${cell}:not(.rdg-editor-container) *::-moz-selection {
-      background: transparent !important;
     }
   }
 `;

@@ -40,12 +40,11 @@ import {
 } from './utils';
 import type {
   CalculatedColumn,
-  CellClickArgs,
   CellClipboardEvent,
   CellCopyArgs,
   CellKeyboardEvent,
   CellKeyDownArgs,
-  CellMouseEvent,
+  CellMouseEventHandler,
   CellNavigationMode,
   CellPasteArgs,
   CellSelectArgs,
@@ -197,18 +196,15 @@ export interface DataGridProps<R, SR = unknown, K extends Key = Key> extends Sha
   /**
    * Event props
    */
-  /** Function called whenever a cell is clicked */
-  onCellClick?: Maybe<
-    (args: CellClickArgs<NoInfer<R>, NoInfer<SR>>, event: CellMouseEvent) => void
-  >;
-  /** Function called whenever a cell is double clicked */
-  onCellDoubleClick?: Maybe<
-    (args: CellClickArgs<NoInfer<R>, NoInfer<SR>>, event: CellMouseEvent) => void
-  >;
-  /** Function called whenever a cell is right clicked */
-  onCellContextMenu?: Maybe<
-    (args: CellClickArgs<NoInfer<R>, NoInfer<SR>>, event: CellMouseEvent) => void
-  >;
+  /** Callback triggered when a pointer becomes active in a cell */
+  onCellMouseDown?: CellMouseEventHandler<R, SR>;
+  /** Callback triggered when a cell is clicked */
+  onCellClick?: CellMouseEventHandler<R, SR>;
+  /** Callback triggered when a cell is double-clicked */
+  onCellDoubleClick?: CellMouseEventHandler<R, SR>;
+  /** Callback triggered when a cell is right-clicked */
+  onCellContextMenu?: CellMouseEventHandler<R, SR>;
+  /** Callback triggered when a key is pressed in a cell */
   onCellKeyDown?: Maybe<
     (args: CellKeyDownArgs<NoInfer<R>, NoInfer<SR>>, event: CellKeyboardEvent) => void
   >;
@@ -220,19 +216,21 @@ export interface DataGridProps<R, SR = unknown, K extends Key = Key> extends Sha
   onCellPaste?: Maybe<
     (args: CellPasteArgs<NoInfer<R>, NoInfer<SR>>, event: CellClipboardEvent) => NoInfer<R>
   >;
+  /** Callback triggered when multiple cells' content is copied */
   onMultiCellCopy?: Maybe<
     (args: MultiCellCopyArgs<NoInfer<R>, NoInfer<SR>>, event: CellClipboardEvent) => void
   >;
+  /** Callback triggered when multiple cells' content is pasted */
   onMultiCellPaste?: Maybe<
     (args: MultiCellPasteArgs<NoInfer<R>, NoInfer<SR>>, event: CellClipboardEvent) => NoInfer<R>[]
   >;
   /** Function called whenever cell selection is changed */
   onSelectedCellChange?: Maybe<(args: CellSelectArgs<NoInfer<R>, NoInfer<SR>>) => void>;
-  /** Called when the grid is scrolled */
+  /** Callback triggered when the grid is scrolled */
   onScroll?: Maybe<(event: React.UIEvent<HTMLDivElement>) => void>;
-  /** Called when a column is resized */
+  /** Callback triggered when column is resized */
   onColumnResize?: Maybe<(column: CalculatedColumn<R, SR>, width: number) => void>;
-  /** Called when a column is reordered */
+  /** Callback triggered when columns are reordered */
   onColumnsReorder?: Maybe<(sourceColumnKey: string, targetColumnKey: string) => void>;
 
   /**
@@ -246,9 +244,16 @@ export interface DataGridProps<R, SR = unknown, K extends Key = Key> extends Sha
   /**
    * Miscellaneous
    */
+  /** Custom renderers for cells, rows, and other components */
   renderers?: Maybe<Renderers<NoInfer<R>, NoInfer<SR>>>;
+  /** Function to apply custom class names to rows */
   rowClass?: Maybe<(row: NoInfer<R>, rowIdx: number) => Maybe<string>>;
-  /** @default 'ltr' */
+  /** Custom class name for the header row */
+  headerRowClass?: Maybe<string>;
+  /**
+   * Text direction of the grid ('ltr' or 'rtl')
+   * @default 'ltr'
+   */
   direction?: Maybe<Direction>;
   'data-testid'?: Maybe<string>;
   'data-cy'?: Maybe<string>;
@@ -1283,7 +1288,7 @@ function DataGrid<R, SR, K extends Key>(
           selectCell: selectCellLatest,
           selectedCellEditor: getCellEditor(rowIdx),
           rangeSelectionMode: enableRangeSelection,
-          onCellMouseDown({ column }, { shiftKey, button }) {
+          onCellMouseDownCapture({ column }, { shiftKey, button }) {
             if (!enableRangeSelection) return;
 
             // only handle left mouse click
@@ -1302,10 +1307,9 @@ function DataGrid<R, SR, K extends Key>(
               });
             }
           },
-          onCellMouseUp({ column }) {
+          onCellMouseUpCapture({ column }) {
             if (!enableRangeSelection) return;
 
-            window.getSelection()?.removeAllRanges();
             setIsMouseRangeSelectionMode(false);
             // select final cell
             selectCellLatest(
@@ -1370,6 +1374,9 @@ function DataGrid<R, SR, K extends Key>(
       aria-multiselectable={isSelectable ? true : undefined}
       aria-colcount={columns.length}
       aria-rowcount={ariaRowCount}
+      // Scrollable containers without tabIndex are keyboard focusable in Chrome only if there is no focusable element inside
+      // whereas they are always focusable in Firefox. We need to set tabIndex to have a consistent behavior across browsers.
+      tabIndex={-1}
       className={clsx(
         rootClassname,
         {

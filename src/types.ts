@@ -114,15 +114,7 @@ export interface RenderCellProps<TRow, TSummaryRow = unknown> {
   isCellEditable: boolean;
   tabIndex: number;
   onRowChange: (row: TRow) => void;
-  selectCell: (
-    position: Position,
-    options?: {
-      enableEditor?: Maybe<boolean>;
-      shiftKey?: Maybe<boolean>;
-      metadata?: Record<string, unknown>;
-    }
-  ) => void;
-  metadata: Record<string, unknown> | undefined;
+  selectCell: (position: Position, options?: SelectCellOptions) => void;
 }
 
 export interface RenderSummaryCellProps<TSummaryRow, TRow = unknown> {
@@ -157,32 +149,57 @@ export interface RenderHeaderCellProps<TRow, TSummaryRow = unknown> {
   tabIndex: number;
 }
 
-export interface CellRendererProps<TRow, TSummaryRow>
-  extends Pick<RenderRowProps<TRow, TSummaryRow>, 'row' | 'rowIdx' | 'selectCell'>,
-    Omit<
-      React.HTMLAttributes<HTMLDivElement>,
-      | 'children'
-      | 'onClick'
-      | 'onDoubleClick'
-      | 'onContextMenu'
-      | 'onMouseDownCapture'
-      | 'onMouseUpCapture'
-      | 'onMouseEnter'
+interface BaseCellRendererProps<TRow, TSummaryRow = unknown>
+  extends Omit<React.ComponentProps<'div'>, 'children'>,
+    Pick<
+      DataGridProps<TRow, TSummaryRow>,
+      'onCellMouseDown' | 'onCellClick' | 'onCellDoubleClick' | 'onCellContextMenu'
     > {
+  rowIdx: number;
+  selectCell: (position: Position, options?: SelectCellOptions) => void;
+}
+
+export interface CellRendererProps<TRow, TSummaryRow>
+  extends BaseCellRendererProps<TRow, TSummaryRow> {
   column: CalculatedColumn<TRow, TSummaryRow>;
-  metadata: Record<string, unknown> | undefined;
+  row: TRow;
   colSpan: number | undefined;
   isDraggedOver: boolean;
   isCellSelected: boolean;
-  selectedBorder: { top: boolean; bottom: boolean; left: boolean; right: boolean } | undefined;
-  onClick: RenderRowProps<TRow, TSummaryRow>['onCellClick'];
-  onDoubleClick: RenderRowProps<TRow, TSummaryRow>['onCellDoubleClick'];
-  onContextMenu: RenderRowProps<TRow, TSummaryRow>['onCellContextMenu'];
   onRowChange: (column: CalculatedColumn<TRow, TSummaryRow>, newRow: TRow) => void;
-  onMouseDownCapture: RenderRowProps<TRow, TSummaryRow>['onCellMouseDown'];
-  onMouseUpCapture: RenderRowProps<TRow, TSummaryRow>['onCellMouseUp'];
-  onMouseEnter: RenderRowProps<TRow, TSummaryRow>['onCellMouseEnter'];
+
+  selectedBorder: { top: boolean; bottom: boolean; left: boolean; right: boolean } | undefined;
+  onCellMouseDownCapture: RenderRowProps<TRow, TSummaryRow>['onCellMouseDownCapture'];
+  onCellMouseUpCapture: RenderRowProps<TRow, TSummaryRow>['onCellMouseUpCapture'];
+  onCellMouseEnter: RenderRowProps<TRow, TSummaryRow>['onCellMouseEnter'];
 }
+
+// export interface CellRendererProps<TRow, TSummaryRow>
+//   extends Pick<RenderRowProps<TRow, TSummaryRow>, 'row' | 'rowIdx' | 'selectCell'>,
+//     Omit<
+//       React.HTMLAttributes<HTMLDivElement>,
+//       | 'children'
+//       | 'onClick'
+//       | 'onDoubleClick'
+//       | 'onContextMenu'
+//       | 'onMouseDownCapture'
+//       | 'onMouseUpCapture'
+//       | 'onMouseEnter'
+//     > {
+//   column: CalculatedColumn<TRow, TSummaryRow>;
+//   colSpan: number | undefined;
+//   isDraggedOver: boolean;
+//   isCellSelected: boolean;
+//   selectedBorder: { top: boolean; bottom: boolean; left: boolean; right: boolean } | undefined;
+//   onClick: RenderRowProps<TRow, TSummaryRow>['onCellClick'];
+//   onDoubleClick: RenderRowProps<TRow, TSummaryRow>['onCellDoubleClick'];
+//   onContextMenu: RenderRowProps<TRow, TSummaryRow>['onCellContextMenu'];
+//   onRowChange: (column: CalculatedColumn<TRow, TSummaryRow>, newRow: TRow) => void;
+
+//   onMouseDownCapture: RenderRowProps<TRow, TSummaryRow>['onCellMouseDown'];
+//   onMouseUpCapture: RenderRowProps<TRow, TSummaryRow>['onCellMouseUp'];
+//   onMouseEnter: RenderRowProps<TRow, TSummaryRow>['onCellMouseEnter'];
+// }
 
 export type CellEvent<E extends React.SyntheticEvent<HTMLDivElement>> = E & {
   preventGridDefault: () => void;
@@ -195,10 +212,10 @@ export type CellKeyboardEvent = CellEvent<React.KeyboardEvent<HTMLDivElement>>;
 
 export type CellClipboardEvent = React.ClipboardEvent<HTMLDivElement>;
 
-export interface CellClickArgs<TRow, TSummaryRow = unknown> {
-  rowIdx: number;
-  row: TRow;
+export interface CellMouseArgs<TRow, TSummaryRow = unknown> {
   column: CalculatedColumn<TRow, TSummaryRow>;
+  row: TRow;
+  rowIdx: number;
   selectCell: (enableEditor?: boolean) => void;
 }
 
@@ -207,13 +224,7 @@ interface SelectCellKeyDownArgs<TRow, TSummaryRow = unknown> {
   row: TRow;
   column: CalculatedColumn<TRow, TSummaryRow>;
   rowIdx: number;
-  selectCell: (
-    position: Position,
-    options?: {
-      enableEditor?: Maybe<boolean>;
-      shiftKey?: Maybe<boolean>;
-    }
-  ) => void;
+  selectCell: (position: Position, options?: SelectCellOptions) => void;
 }
 
 export interface EditCellKeyDownArgs<TRow, TSummaryRow = unknown> {
@@ -235,6 +246,10 @@ export interface CellSelectArgs<TRow, TSummaryRow = unknown> {
   column: CalculatedColumn<TRow, TSummaryRow>;
 }
 
+export type CellMouseEventHandler<R, SR> = Maybe<
+  (args: CellMouseArgs<NoInfer<R>, NoInfer<SR>>, event: CellMouseEvent) => void
+>;
+
 export interface BaseRenderRowProps<TRow, TSummaryRow = unknown>
   extends Omit<React.HTMLAttributes<HTMLDivElement>, 'style' | 'children'>,
     Pick<
@@ -247,14 +262,7 @@ export interface BaseRenderRowProps<TRow, TSummaryRow = unknown>
   isRowSelectionDisabled: boolean;
   isRowSelected: boolean;
   gridRowStart: number;
-  selectCell: (
-    position: Position,
-    options?: {
-      enableEditor?: Maybe<boolean>;
-      shiftKey?: Maybe<boolean>;
-      metadata?: Record<string, unknown>;
-    }
-  ) => void;
+  selectCell: (position: Position, options?: SelectCellOptions) => void;
 }
 
 export interface RenderRowProps<TRow, TSummaryRow = unknown>
@@ -269,14 +277,14 @@ export interface RenderRowProps<TRow, TSummaryRow = unknown>
   // Multi range selection
   selectedRange: CellsRange;
   rangeSelectionMode: boolean;
-  onCellMouseDown: Maybe<
-    (args: CellClickArgs<NoInfer<TRow>, NoInfer<TSummaryRow>>, event: CellMouseEvent) => void
+  onCellMouseDownCapture: Maybe<
+    (args: CellMouseArgs<NoInfer<TRow>, NoInfer<TSummaryRow>>, event: CellMouseEvent) => void
   >;
-  onCellMouseUp: Maybe<
-    (args: CellClickArgs<NoInfer<TRow>, NoInfer<TSummaryRow>>, event: CellMouseEvent) => void
+  onCellMouseUpCapture: Maybe<
+    (args: CellMouseArgs<NoInfer<TRow>, NoInfer<TSummaryRow>>, event: CellMouseEvent) => void
   >;
   onCellMouseEnter: Maybe<
-    (args: CellClickArgs<NoInfer<TRow>, NoInfer<TSummaryRow>>, event: CellMouseEvent) => void
+    (args: CellMouseArgs<NoInfer<TRow>, NoInfer<TSummaryRow>>, event: CellMouseEvent) => void
   >;
 }
 
@@ -384,6 +392,13 @@ export interface Renderers<TRow, TSummaryRow> {
   renderRow?: Maybe<(key: Key, props: RenderRowProps<TRow, TSummaryRow>) => ReactNode>;
   renderSortStatus?: Maybe<(props: RenderSortStatusProps) => ReactNode>;
   noRowsFallback?: Maybe<ReactNode>;
+}
+
+export interface SelectCellOptions {
+  enableEditor?: Maybe<boolean>;
+  shiftKey?: Maybe<boolean>;
+  metadata?: Record<string, unknown>;
+  shouldFocusCell?: Maybe<boolean>;
 }
 
 export type Direction = 'ltr' | 'rtl';
