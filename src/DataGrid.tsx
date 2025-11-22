@@ -1296,7 +1296,10 @@ function DataGrid<R, SR, K extends Key>(
               setIsMouseRangeSelectionMode(true);
 
               // set selection focusNode to the cell (because user-select is none) - firefox needs selection range
-              window.getSelection()?.setBaseAndExtent(currentTarget, 0, currentTarget, 0);
+              // when using table with codemirror editor
+              if (navigator.userAgent.includes('Firefox')) {
+                window.getSelection()?.setBaseAndExtent(currentTarget, 0, currentTarget, 0);
+              }
 
               // set the initial range selection
               if (!isCellWithinSelectionBounds({ idx: column.idx, rowIdx })) {
