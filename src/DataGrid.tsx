@@ -816,7 +816,7 @@ function DataGrid<R, SR, K extends Key>(
   }
 
   function handleCellCopy(event: CellClipboardEvent) {
-    if (!selectedCellIsWithinViewportBounds) return;
+    if (!selectedCellIsWithinViewportBounds  || selectedPosition.mode === 'EDIT') return;
 
     if (enableRangeSelection) {
       const startRowIdx = Math.min(selectedRange.startRowIdx, selectedRange.endRowIdx);
