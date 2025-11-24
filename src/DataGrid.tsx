@@ -811,6 +811,7 @@ function DataGrid<R, SR, K extends Key>(
   }
 
   function handleCellCopy(event: CellClipboardEvent) {
+    console.log('handleCellCopy called');
     if (!selectedCellIsWithinViewportBounds || selectedPosition.mode === 'EDIT') return;
 
     if (enableRangeSelection) {
