@@ -65,7 +65,7 @@ export default function EditCell<R, SR>({
   onKeyDown,
   navigate,
   selectCell,
-  metadata,
+  metadata
 }: EditCellProps<R, SR>) {
   const frameRequestRef = useRef<number | undefined>(undefined);
   const commitOnOutsideClick = column.editorOptions?.commitOnOutsideClick !== false;
@@ -175,8 +175,7 @@ export default function EditCell<R, SR>({
               isCellEditable: true,
               tabIndex: -1,
               onRowChange: onEditorRowChange,
-              selectCell,
-              metadata
+              selectCell
             })}
         </>
       )}

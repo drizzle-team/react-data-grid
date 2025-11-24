@@ -42,7 +42,6 @@ function Cell<R, SR>(
     onMouseDownCapture,
     onMouseUpCapture,
     onMouseEnter,
-    metadata,
     ...props
   }: CellRendererProps<R, SR>,
   ref: React.Ref<HTMLDivElement>
@@ -139,8 +138,7 @@ function Cell<R, SR>(
         isCellEditable: isEditable,
         tabIndex: childTabIndex,
         onRowChange: handleRowChange,
-        selectCell,
-        metadata
+        selectCell
       })}
     </div>
   );

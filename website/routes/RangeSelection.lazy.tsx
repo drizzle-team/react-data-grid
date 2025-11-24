@@ -5,9 +5,9 @@ import { createLazyFileRoute } from '@tanstack/react-router';
 import { css } from '@linaria/core';
 
 import DataGrid, {
+  defaultEditor,
   SelectCellFormatter,
   SelectColumn,
-  textEditor,
   type Column,
   type SortColumn
 } from '../../src';
@@ -88,7 +88,7 @@ function getColumns(
       key: 'title',
       name: 'Task',
       frozen: true,
-      renderEditCell: textEditor,
+      renderEditCell: defaultEditor,
       renderSummaryCell({ row }) {
         return `${row.totalCount} records`;
       }
@@ -98,12 +98,12 @@ function getColumns(
       name: 'Client',
       width: 'max-content',
       draggable: true,
-      renderEditCell: textEditor
+      renderEditCell: defaultEditor
     },
     {
       key: 'area',
       name: 'Area',
-      renderEditCell: textEditor
+      renderEditCell: defaultEditor
     },
     {
       key: 'country',
@@ -124,12 +124,12 @@ function getColumns(
     {
       key: 'contact',
       name: 'Contact',
-      renderEditCell: textEditor
+      renderEditCell: defaultEditor
     },
     {
       key: 'assignee',
       name: 'Assignee',
-      renderEditCell: textEditor
+      renderEditCell: defaultEditor
     },
     {
       key: 'progress',
@@ -211,7 +211,7 @@ function getColumns(
     {
       key: 'version',
       name: 'Version',
-      renderEditCell: textEditor
+      renderEditCell: defaultEditor
     },
     {
       key: 'available',

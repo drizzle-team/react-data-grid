@@ -1284,6 +1284,9 @@ function DataGrid<R, SR, K extends Key>(
           selectedCellEditor: getCellEditor(rowIdx),
           rangeSelectionMode: enableRangeSelection,
           onCellMouseDown({ column }, { shiftKey, button }) {
+            // prevent the browser's native range selection
+            window.getSelection()?.removeAllRanges();
+
             if (!enableRangeSelection) return;
 
             // only handle left mouse click
@@ -1305,7 +1308,6 @@ function DataGrid<R, SR, K extends Key>(
           onCellMouseUp({ column }) {
             if (!enableRangeSelection) return;
 
-            window.getSelection()?.removeAllRanges();
             setIsMouseRangeSelectionMode(false);
             // select final cell
             selectCellLatest(

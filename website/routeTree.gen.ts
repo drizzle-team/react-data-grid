@@ -10,353 +10,164 @@
 
 import { createFileRoute } from '@tanstack/react-router'
 
-// Import Routes
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as AllFeaturesRouteImport } from './routes/AllFeatures'
+import { Route as IndexRouteImport } from './routes/index'
 
-import { Route as rootRoute } from './routes/__root'
-import { Route as AllFeaturesImport } from './routes/AllFeatures'
-import { Route as IndexImport } from './routes/index'
-
-// Create Virtual Routes
-
-const VariableRowHeightLazyImport = createFileRoute('/VariableRowHeight')()
-const TreeViewLazyImport = createFileRoute('/TreeView')()
-const ScrollToCellLazyImport = createFileRoute('/ScrollToCell')()
-const RowsReorderingLazyImport = createFileRoute('/RowsReordering')()
-const RowGroupingLazyImport = createFileRoute('/RowGrouping')()
-const ResizableGridLazyImport = createFileRoute('/ResizableGrid')()
-const RangeSelectionLazyImport = createFileRoute('/RangeSelection')()
-const NoRowsLazyImport = createFileRoute('/NoRows')()
-const MillionCellsLazyImport = createFileRoute('/MillionCells')()
-const MasterDetailLazyImport = createFileRoute('/MasterDetail')()
-const InfiniteScrollingLazyImport = createFileRoute('/InfiniteScrolling')()
-const HeaderFiltersLazyImport = createFileRoute('/HeaderFilters')()
-const CustomizableRenderersLazyImport = createFileRoute(
+const VariableRowHeightLazyRouteImport = createFileRoute('/VariableRowHeight')()
+const TreeViewLazyRouteImport = createFileRoute('/TreeView')()
+const ScrollToCellLazyRouteImport = createFileRoute('/ScrollToCell')()
+const RowsReorderingLazyRouteImport = createFileRoute('/RowsReordering')()
+const RowGroupingLazyRouteImport = createFileRoute('/RowGrouping')()
+const ResizableGridLazyRouteImport = createFileRoute('/ResizableGrid')()
+const RangeSelectionLazyRouteImport = createFileRoute('/RangeSelection')()
+const NoRowsLazyRouteImport = createFileRoute('/NoRows')()
+const MillionCellsLazyRouteImport = createFileRoute('/MillionCells')()
+const MasterDetailLazyRouteImport = createFileRoute('/MasterDetail')()
+const InfiniteScrollingLazyRouteImport = createFileRoute('/InfiniteScrolling')()
+const HeaderFiltersLazyRouteImport = createFileRoute('/HeaderFilters')()
+const CustomizableRenderersLazyRouteImport = createFileRoute(
   '/CustomizableRenderers',
 )()
-const ContextMenuLazyImport = createFileRoute('/ContextMenu')()
-const CommonFeaturesLazyImport = createFileRoute('/CommonFeatures')()
-const ColumnsReorderingLazyImport = createFileRoute('/ColumnsReordering')()
-const ColumnSpanningLazyImport = createFileRoute('/ColumnSpanning')()
-const ColumnGroupingLazyImport = createFileRoute('/ColumnGrouping')()
-const CellNavigationLazyImport = createFileRoute('/CellNavigation')()
-const AnimationLazyImport = createFileRoute('/Animation')()
+const ContextMenuLazyRouteImport = createFileRoute('/ContextMenu')()
+const CommonFeaturesLazyRouteImport = createFileRoute('/CommonFeatures')()
+const ColumnsReorderingLazyRouteImport = createFileRoute('/ColumnsReordering')()
+const ColumnSpanningLazyRouteImport = createFileRoute('/ColumnSpanning')()
+const ColumnGroupingLazyRouteImport = createFileRoute('/ColumnGrouping')()
+const CellNavigationLazyRouteImport = createFileRoute('/CellNavigation')()
+const AnimationLazyRouteImport = createFileRoute('/Animation')()
 
-// Create/Update Routes
-
-const VariableRowHeightLazyRoute = VariableRowHeightLazyImport.update({
+const VariableRowHeightLazyRoute = VariableRowHeightLazyRouteImport.update({
   id: '/VariableRowHeight',
   path: '/VariableRowHeight',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() =>
   import('./routes/VariableRowHeight.lazy').then((d) => d.Route),
 )
-
-const TreeViewLazyRoute = TreeViewLazyImport.update({
+const TreeViewLazyRoute = TreeViewLazyRouteImport.update({
   id: '/TreeView',
   path: '/TreeView',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/TreeView.lazy').then((d) => d.Route))
-
-const ScrollToCellLazyRoute = ScrollToCellLazyImport.update({
+const ScrollToCellLazyRoute = ScrollToCellLazyRouteImport.update({
   id: '/ScrollToCell',
   path: '/ScrollToCell',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/ScrollToCell.lazy').then((d) => d.Route))
-
-const RowsReorderingLazyRoute = RowsReorderingLazyImport.update({
+const RowsReorderingLazyRoute = RowsReorderingLazyRouteImport.update({
   id: '/RowsReordering',
   path: '/RowsReordering',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() =>
   import('./routes/RowsReordering.lazy').then((d) => d.Route),
 )
-
-const RowGroupingLazyRoute = RowGroupingLazyImport.update({
+const RowGroupingLazyRoute = RowGroupingLazyRouteImport.update({
   id: '/RowGrouping',
   path: '/RowGrouping',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/RowGrouping.lazy').then((d) => d.Route))
-
-const ResizableGridLazyRoute = ResizableGridLazyImport.update({
+const ResizableGridLazyRoute = ResizableGridLazyRouteImport.update({
   id: '/ResizableGrid',
   path: '/ResizableGrid',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/ResizableGrid.lazy').then((d) => d.Route))
-
-const RangeSelectionLazyRoute = RangeSelectionLazyImport.update({
+const RangeSelectionLazyRoute = RangeSelectionLazyRouteImport.update({
   id: '/RangeSelection',
   path: '/RangeSelection',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() =>
   import('./routes/RangeSelection.lazy').then((d) => d.Route),
 )
-
-const NoRowsLazyRoute = NoRowsLazyImport.update({
+const NoRowsLazyRoute = NoRowsLazyRouteImport.update({
   id: '/NoRows',
   path: '/NoRows',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/NoRows.lazy').then((d) => d.Route))
-
-const MillionCellsLazyRoute = MillionCellsLazyImport.update({
+const MillionCellsLazyRoute = MillionCellsLazyRouteImport.update({
   id: '/MillionCells',
   path: '/MillionCells',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/MillionCells.lazy').then((d) => d.Route))
-
-const MasterDetailLazyRoute = MasterDetailLazyImport.update({
+const MasterDetailLazyRoute = MasterDetailLazyRouteImport.update({
   id: '/MasterDetail',
   path: '/MasterDetail',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/MasterDetail.lazy').then((d) => d.Route))
-
-const InfiniteScrollingLazyRoute = InfiniteScrollingLazyImport.update({
+const InfiniteScrollingLazyRoute = InfiniteScrollingLazyRouteImport.update({
   id: '/InfiniteScrolling',
   path: '/InfiniteScrolling',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() =>
   import('./routes/InfiniteScrolling.lazy').then((d) => d.Route),
 )
-
-const HeaderFiltersLazyRoute = HeaderFiltersLazyImport.update({
+const HeaderFiltersLazyRoute = HeaderFiltersLazyRouteImport.update({
   id: '/HeaderFilters',
   path: '/HeaderFilters',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/HeaderFilters.lazy').then((d) => d.Route))
-
-const CustomizableRenderersLazyRoute = CustomizableRenderersLazyImport.update({
-  id: '/CustomizableRenderers',
-  path: '/CustomizableRenderers',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() =>
-  import('./routes/CustomizableRenderers.lazy').then((d) => d.Route),
-)
-
-const ContextMenuLazyRoute = ContextMenuLazyImport.update({
+const CustomizableRenderersLazyRoute =
+  CustomizableRenderersLazyRouteImport.update({
+    id: '/CustomizableRenderers',
+    path: '/CustomizableRenderers',
+    getParentRoute: () => rootRouteImport,
+  } as any).lazy(() =>
+    import('./routes/CustomizableRenderers.lazy').then((d) => d.Route),
+  )
+const ContextMenuLazyRoute = ContextMenuLazyRouteImport.update({
   id: '/ContextMenu',
   path: '/ContextMenu',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/ContextMenu.lazy').then((d) => d.Route))
-
-const CommonFeaturesLazyRoute = CommonFeaturesLazyImport.update({
+const CommonFeaturesLazyRoute = CommonFeaturesLazyRouteImport.update({
   id: '/CommonFeatures',
   path: '/CommonFeatures',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() =>
   import('./routes/CommonFeatures.lazy').then((d) => d.Route),
 )
-
-const ColumnsReorderingLazyRoute = ColumnsReorderingLazyImport.update({
+const ColumnsReorderingLazyRoute = ColumnsReorderingLazyRouteImport.update({
   id: '/ColumnsReordering',
   path: '/ColumnsReordering',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() =>
   import('./routes/ColumnsReordering.lazy').then((d) => d.Route),
 )
-
-const ColumnSpanningLazyRoute = ColumnSpanningLazyImport.update({
+const ColumnSpanningLazyRoute = ColumnSpanningLazyRouteImport.update({
   id: '/ColumnSpanning',
   path: '/ColumnSpanning',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() =>
   import('./routes/ColumnSpanning.lazy').then((d) => d.Route),
 )
-
-const ColumnGroupingLazyRoute = ColumnGroupingLazyImport.update({
+const ColumnGroupingLazyRoute = ColumnGroupingLazyRouteImport.update({
   id: '/ColumnGrouping',
   path: '/ColumnGrouping',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() =>
   import('./routes/ColumnGrouping.lazy').then((d) => d.Route),
 )
-
-const CellNavigationLazyRoute = CellNavigationLazyImport.update({
+const CellNavigationLazyRoute = CellNavigationLazyRouteImport.update({
   id: '/CellNavigation',
   path: '/CellNavigation',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() =>
   import('./routes/CellNavigation.lazy').then((d) => d.Route),
 )
-
-const AnimationLazyRoute = AnimationLazyImport.update({
+const AnimationLazyRoute = AnimationLazyRouteImport.update({
   id: '/Animation',
   path: '/Animation',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/Animation.lazy').then((d) => d.Route))
-
-const AllFeaturesRoute = AllFeaturesImport.update({
+const AllFeaturesRoute = AllFeaturesRouteImport.update({
   id: '/AllFeatures',
   path: '/AllFeatures',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/AllFeatures.lazy').then((d) => d.Route))
-
-const IndexRoute = IndexImport.update({
+const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-// Populate the FileRoutesByPath interface
-
-declare module '@tanstack/react-router' {
-  interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/AllFeatures': {
-      id: '/AllFeatures'
-      path: '/AllFeatures'
-      fullPath: '/AllFeatures'
-      preLoaderRoute: typeof AllFeaturesImport
-      parentRoute: typeof rootRoute
-    }
-    '/Animation': {
-      id: '/Animation'
-      path: '/Animation'
-      fullPath: '/Animation'
-      preLoaderRoute: typeof AnimationLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/CellNavigation': {
-      id: '/CellNavigation'
-      path: '/CellNavigation'
-      fullPath: '/CellNavigation'
-      preLoaderRoute: typeof CellNavigationLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/ColumnGrouping': {
-      id: '/ColumnGrouping'
-      path: '/ColumnGrouping'
-      fullPath: '/ColumnGrouping'
-      preLoaderRoute: typeof ColumnGroupingLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/ColumnSpanning': {
-      id: '/ColumnSpanning'
-      path: '/ColumnSpanning'
-      fullPath: '/ColumnSpanning'
-      preLoaderRoute: typeof ColumnSpanningLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/ColumnsReordering': {
-      id: '/ColumnsReordering'
-      path: '/ColumnsReordering'
-      fullPath: '/ColumnsReordering'
-      preLoaderRoute: typeof ColumnsReorderingLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/CommonFeatures': {
-      id: '/CommonFeatures'
-      path: '/CommonFeatures'
-      fullPath: '/CommonFeatures'
-      preLoaderRoute: typeof CommonFeaturesLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/ContextMenu': {
-      id: '/ContextMenu'
-      path: '/ContextMenu'
-      fullPath: '/ContextMenu'
-      preLoaderRoute: typeof ContextMenuLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/CustomizableRenderers': {
-      id: '/CustomizableRenderers'
-      path: '/CustomizableRenderers'
-      fullPath: '/CustomizableRenderers'
-      preLoaderRoute: typeof CustomizableRenderersLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/HeaderFilters': {
-      id: '/HeaderFilters'
-      path: '/HeaderFilters'
-      fullPath: '/HeaderFilters'
-      preLoaderRoute: typeof HeaderFiltersLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/InfiniteScrolling': {
-      id: '/InfiniteScrolling'
-      path: '/InfiniteScrolling'
-      fullPath: '/InfiniteScrolling'
-      preLoaderRoute: typeof InfiniteScrollingLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/MasterDetail': {
-      id: '/MasterDetail'
-      path: '/MasterDetail'
-      fullPath: '/MasterDetail'
-      preLoaderRoute: typeof MasterDetailLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/MillionCells': {
-      id: '/MillionCells'
-      path: '/MillionCells'
-      fullPath: '/MillionCells'
-      preLoaderRoute: typeof MillionCellsLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/NoRows': {
-      id: '/NoRows'
-      path: '/NoRows'
-      fullPath: '/NoRows'
-      preLoaderRoute: typeof NoRowsLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/RangeSelection': {
-      id: '/RangeSelection'
-      path: '/RangeSelection'
-      fullPath: '/RangeSelection'
-      preLoaderRoute: typeof RangeSelectionLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/ResizableGrid': {
-      id: '/ResizableGrid'
-      path: '/ResizableGrid'
-      fullPath: '/ResizableGrid'
-      preLoaderRoute: typeof ResizableGridLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/RowGrouping': {
-      id: '/RowGrouping'
-      path: '/RowGrouping'
-      fullPath: '/RowGrouping'
-      preLoaderRoute: typeof RowGroupingLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/RowsReordering': {
-      id: '/RowsReordering'
-      path: '/RowsReordering'
-      fullPath: '/RowsReordering'
-      preLoaderRoute: typeof RowsReorderingLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/ScrollToCell': {
-      id: '/ScrollToCell'
-      path: '/ScrollToCell'
-      fullPath: '/ScrollToCell'
-      preLoaderRoute: typeof ScrollToCellLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/TreeView': {
-      id: '/TreeView'
-      path: '/TreeView'
-      fullPath: '/TreeView'
-      preLoaderRoute: typeof TreeViewLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/VariableRowHeight': {
-      id: '/VariableRowHeight'
-      path: '/VariableRowHeight'
-      fullPath: '/VariableRowHeight'
-      preLoaderRoute: typeof VariableRowHeightLazyImport
-      parentRoute: typeof rootRoute
-    }
-  }
-}
-
-// Create and export the route tree
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -382,7 +193,6 @@ export interface FileRoutesByFullPath {
   '/TreeView': typeof TreeViewLazyRoute
   '/VariableRowHeight': typeof VariableRowHeightLazyRoute
 }
-
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/AllFeatures': typeof AllFeaturesRoute
@@ -407,9 +217,8 @@ export interface FileRoutesByTo {
   '/TreeView': typeof TreeViewLazyRoute
   '/VariableRowHeight': typeof VariableRowHeightLazyRoute
 }
-
 export interface FileRoutesById {
-  __root__: typeof rootRoute
+  __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/AllFeatures': typeof AllFeaturesRoute
   '/Animation': typeof AnimationLazyRoute
@@ -433,7 +242,6 @@ export interface FileRoutesById {
   '/TreeView': typeof TreeViewLazyRoute
   '/VariableRowHeight': typeof VariableRowHeightLazyRoute
 }
-
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
@@ -509,7 +317,6 @@ export interface FileRouteTypes {
     | '/VariableRowHeight'
   fileRoutesById: FileRoutesById
 }
-
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AllFeaturesRoute: typeof AllFeaturesRoute
@@ -533,6 +340,165 @@ export interface RootRouteChildren {
   ScrollToCellLazyRoute: typeof ScrollToCellLazyRoute
   TreeViewLazyRoute: typeof TreeViewLazyRoute
   VariableRowHeightLazyRoute: typeof VariableRowHeightLazyRoute
+}
+
+declare module '@tanstack/react-router' {
+  interface FileRoutesByPath {
+    '/VariableRowHeight': {
+      id: '/VariableRowHeight'
+      path: '/VariableRowHeight'
+      fullPath: '/VariableRowHeight'
+      preLoaderRoute: typeof VariableRowHeightLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/TreeView': {
+      id: '/TreeView'
+      path: '/TreeView'
+      fullPath: '/TreeView'
+      preLoaderRoute: typeof TreeViewLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ScrollToCell': {
+      id: '/ScrollToCell'
+      path: '/ScrollToCell'
+      fullPath: '/ScrollToCell'
+      preLoaderRoute: typeof ScrollToCellLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/RowsReordering': {
+      id: '/RowsReordering'
+      path: '/RowsReordering'
+      fullPath: '/RowsReordering'
+      preLoaderRoute: typeof RowsReorderingLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/RowGrouping': {
+      id: '/RowGrouping'
+      path: '/RowGrouping'
+      fullPath: '/RowGrouping'
+      preLoaderRoute: typeof RowGroupingLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ResizableGrid': {
+      id: '/ResizableGrid'
+      path: '/ResizableGrid'
+      fullPath: '/ResizableGrid'
+      preLoaderRoute: typeof ResizableGridLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/RangeSelection': {
+      id: '/RangeSelection'
+      path: '/RangeSelection'
+      fullPath: '/RangeSelection'
+      preLoaderRoute: typeof RangeSelectionLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/NoRows': {
+      id: '/NoRows'
+      path: '/NoRows'
+      fullPath: '/NoRows'
+      preLoaderRoute: typeof NoRowsLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/MillionCells': {
+      id: '/MillionCells'
+      path: '/MillionCells'
+      fullPath: '/MillionCells'
+      preLoaderRoute: typeof MillionCellsLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/MasterDetail': {
+      id: '/MasterDetail'
+      path: '/MasterDetail'
+      fullPath: '/MasterDetail'
+      preLoaderRoute: typeof MasterDetailLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/InfiniteScrolling': {
+      id: '/InfiniteScrolling'
+      path: '/InfiniteScrolling'
+      fullPath: '/InfiniteScrolling'
+      preLoaderRoute: typeof InfiniteScrollingLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/HeaderFilters': {
+      id: '/HeaderFilters'
+      path: '/HeaderFilters'
+      fullPath: '/HeaderFilters'
+      preLoaderRoute: typeof HeaderFiltersLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/CustomizableRenderers': {
+      id: '/CustomizableRenderers'
+      path: '/CustomizableRenderers'
+      fullPath: '/CustomizableRenderers'
+      preLoaderRoute: typeof CustomizableRenderersLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ContextMenu': {
+      id: '/ContextMenu'
+      path: '/ContextMenu'
+      fullPath: '/ContextMenu'
+      preLoaderRoute: typeof ContextMenuLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/CommonFeatures': {
+      id: '/CommonFeatures'
+      path: '/CommonFeatures'
+      fullPath: '/CommonFeatures'
+      preLoaderRoute: typeof CommonFeaturesLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ColumnsReordering': {
+      id: '/ColumnsReordering'
+      path: '/ColumnsReordering'
+      fullPath: '/ColumnsReordering'
+      preLoaderRoute: typeof ColumnsReorderingLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ColumnSpanning': {
+      id: '/ColumnSpanning'
+      path: '/ColumnSpanning'
+      fullPath: '/ColumnSpanning'
+      preLoaderRoute: typeof ColumnSpanningLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ColumnGrouping': {
+      id: '/ColumnGrouping'
+      path: '/ColumnGrouping'
+      fullPath: '/ColumnGrouping'
+      preLoaderRoute: typeof ColumnGroupingLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/CellNavigation': {
+      id: '/CellNavigation'
+      path: '/CellNavigation'
+      fullPath: '/CellNavigation'
+      preLoaderRoute: typeof CellNavigationLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/Animation': {
+      id: '/Animation'
+      path: '/Animation'
+      fullPath: '/Animation'
+      preLoaderRoute: typeof AnimationLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/AllFeatures': {
+      id: '/AllFeatures'
+      path: '/AllFeatures'
+      fullPath: '/AllFeatures'
+      preLoaderRoute: typeof AllFeaturesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+  }
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -559,107 +525,6 @@ const rootRouteChildren: RootRouteChildren = {
   TreeViewLazyRoute: TreeViewLazyRoute,
   VariableRowHeightLazyRoute: VariableRowHeightLazyRoute,
 }
-
-export const routeTree = rootRoute
+export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-/* ROUTE_MANIFEST_START
-{
-  "routes": {
-    "__root__": {
-      "filePath": "__root.tsx",
-      "children": [
-        "/",
-        "/AllFeatures",
-        "/Animation",
-        "/CellNavigation",
-        "/ColumnGrouping",
-        "/ColumnSpanning",
-        "/ColumnsReordering",
-        "/CommonFeatures",
-        "/ContextMenu",
-        "/CustomizableRenderers",
-        "/HeaderFilters",
-        "/InfiniteScrolling",
-        "/MasterDetail",
-        "/MillionCells",
-        "/NoRows",
-        "/RangeSelection",
-        "/ResizableGrid",
-        "/RowGrouping",
-        "/RowsReordering",
-        "/ScrollToCell",
-        "/TreeView",
-        "/VariableRowHeight"
-      ]
-    },
-    "/": {
-      "filePath": "index.tsx"
-    },
-    "/AllFeatures": {
-      "filePath": "AllFeatures.tsx"
-    },
-    "/Animation": {
-      "filePath": "Animation.lazy.tsx"
-    },
-    "/CellNavigation": {
-      "filePath": "CellNavigation.lazy.tsx"
-    },
-    "/ColumnGrouping": {
-      "filePath": "ColumnGrouping.lazy.tsx"
-    },
-    "/ColumnSpanning": {
-      "filePath": "ColumnSpanning.lazy.tsx"
-    },
-    "/ColumnsReordering": {
-      "filePath": "ColumnsReordering.lazy.tsx"
-    },
-    "/CommonFeatures": {
-      "filePath": "CommonFeatures.lazy.tsx"
-    },
-    "/ContextMenu": {
-      "filePath": "ContextMenu.lazy.tsx"
-    },
-    "/CustomizableRenderers": {
-      "filePath": "CustomizableRenderers.lazy.tsx"
-    },
-    "/HeaderFilters": {
-      "filePath": "HeaderFilters.lazy.tsx"
-    },
-    "/InfiniteScrolling": {
-      "filePath": "InfiniteScrolling.lazy.tsx"
-    },
-    "/MasterDetail": {
-      "filePath": "MasterDetail.lazy.tsx"
-    },
-    "/MillionCells": {
-      "filePath": "MillionCells.lazy.tsx"
-    },
-    "/NoRows": {
-      "filePath": "NoRows.lazy.tsx"
-    },
-    "/RangeSelection": {
-      "filePath": "RangeSelection.lazy.tsx"
-    },
-    "/ResizableGrid": {
-      "filePath": "ResizableGrid.lazy.tsx"
-    },
-    "/RowGrouping": {
-      "filePath": "RowGrouping.lazy.tsx"
-    },
-    "/RowsReordering": {
-      "filePath": "RowsReordering.lazy.tsx"
-    },
-    "/ScrollToCell": {
-      "filePath": "ScrollToCell.lazy.tsx"
-    },
-    "/TreeView": {
-      "filePath": "TreeView.lazy.tsx"
-    },
-    "/VariableRowHeight": {
-      "filePath": "VariableRowHeight.lazy.tsx"
-    }
-  }
-}
-ROUTE_MANIFEST_END */
