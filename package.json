@@ -53,6 +53,7 @@
     "pack": "mkdir -p dist && cp -r lib dist/ && cp package.json dist/ && (cd dist && npm pack --pack-destination ..) && rm -f react-data-grid.tgz && mv *.tgz react-data-grid.tgz"
   },
   "dependencies": {
+    "@floating-ui/react-dom": "^2.1.6",
     "clsx": "^2.0.0"
   },
   "devDependencies": {
