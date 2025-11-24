@@ -589,16 +589,19 @@ function DataGrid<R, SR, K extends Key>(
     latestDraggedOverRowIdx.current = rowIdx;
   }, []);
 
-  const focusCell = useCallback((shouldScroll = true) => {
-    const cell = getCellToScroll(gridRef.current!);
-    if (cell === null) return;
+  const focusCell = useCallback(
+    (shouldScroll = true) => {
+      const cell = getCellToScroll(gridRef.current!);
+      if (cell === null) return;
 
       if (shouldScroll) {
         scrollIntoView(cell);
       }
 
       cell.focus({ preventScroll: true });
-  }, [gridRef]);
+    },
+    [gridRef]
+  );
 
   /**
    * effects
@@ -1099,7 +1102,7 @@ function DataGrid<R, SR, K extends Key>(
     return isDraggedOver ? selectedPosition.idx : undefined;
   }
 
-    function handleDragHandleClick() {
+  function handleDragHandleClick() {
     // keep the focus on the cell but do not scroll
     focusCell(false);
   }
