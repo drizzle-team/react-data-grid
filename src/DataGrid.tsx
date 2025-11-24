@@ -589,36 +589,31 @@ function DataGrid<R, SR, K extends Key>(
     latestDraggedOverRowIdx.current = rowIdx;
   }, []);
 
-  const focusCellOrCellContent = useCallback(() => {
+  const focusCell = useCallback((shouldScroll = true) => {
     const cell = getCellToScroll(gridRef.current!);
     if (cell === null) return;
 
-    scrollIntoView(cell);
-    // Focus cell content when available instead of the cell itself
-    const elementToFocus = cell.querySelector<Element & HTMLOrSVGElement>('[tabindex="0"]') ?? cell;
-    elementToFocus.focus({ preventScroll: true });
+      if (shouldScroll) {
+        scrollIntoView(cell);
+      }
+
+      cell.focus({ preventScroll: true });
   }, [gridRef]);
 
   /**
    * effects
    */
   useLayoutEffect(() => {
-    if (
-      focusSinkRef.current !== null &&
-      selectedCellIsWithinSelectionBounds &&
-      selectedPosition.idx === -1
-    ) {
-      focusSinkRef.current.focus({ preventScroll: true });
-      scrollIntoView(focusSinkRef.current);
-    }
-  }, [selectedCellIsWithinSelectionBounds, selectedPosition]);
-
-  useLayoutEffect(() => {
     if (shouldFocusCell) {
+      if (focusSinkRef.current !== null && selectedPosition.idx === -1) {
+        focusSinkRef.current.focus({ preventScroll: true });
+        scrollIntoView(focusSinkRef.current);
+      } else {
+        focusCell();
+      }
       setShouldFocusCell(false);
-      focusCellOrCellContent();
     }
-  }, [shouldFocusCell, focusCellOrCellContent]);
+  }, [shouldFocusCell, focusCell, selectedPosition.idx]);
 
   useImperativeHandle(ref, () => ({
     element: gridRef.current,
@@ -1104,6 +1099,11 @@ function DataGrid<R, SR, K extends Key>(
     return isDraggedOver ? selectedPosition.idx : undefined;
   }
 
+    function handleDragHandleClick() {
+    // keep the focus on the cell but do not scroll
+    focusCell(false);
+  }
+
   function renderDragHandle() {
     if (
       onFill == null ||
@@ -1133,7 +1133,7 @@ function DataGrid<R, SR, K extends Key>(
         isCellEditable={isCellEditable}
         latestDraggedOverRowIdx={latestDraggedOverRowIdx}
         onRowsChange={onRowsChange}
-        onClick={focusCellOrCellContent}
+        onClick={handleDragHandleClick}
         onFill={onFill}
         setDragging={setDragging}
         setDraggedOverRowIdx={setDraggedOverRowIdx}
