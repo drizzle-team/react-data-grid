@@ -811,7 +811,6 @@ function DataGrid<R, SR, K extends Key>(
   }
 
   function handleCellCopy(event: CellClipboardEvent) {
-    console.log('handleCellCopy called');
     if (!selectedCellIsWithinViewportBounds || selectedPosition.mode === 'EDIT') return;
 
     if (enableRangeSelection) {
@@ -1284,9 +1283,14 @@ function DataGrid<R, SR, K extends Key>(
           selectCell: selectCellLatest,
           selectedCellEditor: getCellEditor(rowIdx),
           rangeSelectionMode: enableRangeSelection,
-          onCellMouseDown({ column }, { shiftKey, button }) {
-            // prevent the browser's native range selection
-            window.getSelection()?.removeAllRanges();
+          onCellMouseDown({ column }, { shiftKey, button, currentTarget }) {
+            // set selection focusNode to the cell (because user-select is none) - firefox needs selection range
+            // when using table with codemirror editor
+            if (navigator.userAgent.includes('Firefox')) {
+              window.getSelection()?.setBaseAndExtent(currentTarget, 0, currentTarget, 0);
+            } else {
+              window.getSelection()?.removeAllRanges();
+            }
 
             if (!enableRangeSelection) return;
 
