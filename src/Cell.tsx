@@ -113,10 +113,10 @@ function Cell<R, SR>(
       aria-colindex={column.idx + 1} // aria-colindex is 1-based
       aria-colspan={colSpan}
       aria-selected={isCellSelected}
-      has-top-border={hasTopBorder ? 'true' : undefined}
-      has-left-border={hasLeftBorder ? 'true' : undefined}
-      has-bottom-border={hasBottomBorder ? 'true' : undefined}
-      has-right-border={hasRightBorder ? 'true' : undefined}
+      selected-top-border={hasTopBorder ? 'true' : undefined}
+      selected-left-border={hasLeftBorder ? 'true' : undefined}
+      selected-bottom-border={hasBottomBorder ? 'true' : undefined}
+      selected-right-border={hasRightBorder ? 'true' : undefined}
       aria-readonly={!isEditable || undefined}
       ref={ref}
       tabIndex={tabIndex}
