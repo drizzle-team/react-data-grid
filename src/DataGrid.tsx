@@ -568,6 +568,9 @@ function DataGrid<R, SR, K extends Key>(
   const onCellClickLatest = useLatestFunc(onCellClick);
   const onCellDoubleClickLatest = useLatestFunc(onCellDoubleClick);
   const onCellContextMenuLatest = useLatestFunc(onCellContextMenu);
+  const onCellMouseDownLatest = useLatestFunc(onCellMouseDown);
+  const onCellMouseUpLatest = useLatestFunc(onCellMouseUp);
+  const onCellMouseEnterLatest = useLatestFunc(onCellMouseEnter);
   const selectHeaderRowLatest = useLatestFunc(selectHeaderRow);
   const selectRowLatest = useLatestFunc(selectRow);
   const handleFormatterRowChangeLatest = useLatestFunc(updateRow);
@@ -1000,6 +1003,66 @@ function DataGrid<R, SR, K extends Key>(
     }
   }
 
+  function onCellMouseDown(
+    { rowIdx, column }: CellClickArgs<NoInfer<R>, NoInfer<SR>>,
+    { shiftKey, button, currentTarget }: CellMouseEvent
+  ) {
+    // set selection focusNode to the cell (because user-select is none) - firefox needs selection range
+    // when using table with codemirror editor
+    if (navigator.userAgent.includes('Firefox')) {
+      window.getSelection()?.setBaseAndExtent(currentTarget, 0, currentTarget, 0);
+    } else {
+      window.getSelection()?.removeAllRanges();
+    }
+
+    if (!enableRangeSelection) return;
+
+    // only handle left mouse click
+    if (!shiftKey && button === 0) {
+      setIsMouseRangeSelectionMode(true);
+
+      // set the initial range selection
+      if (!isCellWithinSelectionBounds({ idx: column.idx, rowIdx })) {
+        return;
+      }
+      setSelectedRange({
+        startRowIdx: rowIdx,
+        startColumnIdx: column.idx,
+        endRowIdx: rowIdx,
+        endColumnIdx: column.idx
+      });
+    }
+  }
+
+  function onCellMouseUp({ rowIdx, column }: CellClickArgs<NoInfer<R>, NoInfer<SR>>) {
+    if (!enableRangeSelection) return;
+
+    setIsMouseRangeSelectionMode(false);
+    // select final cell
+    selectCellLatest(
+      {
+        rowIdx,
+        idx: column.idx
+      },
+      {
+        shiftKey: true
+      }
+    );
+  }
+
+  function onCellMouseEnter({ rowIdx, column }: CellClickArgs<NoInfer<R>, NoInfer<SR>>) {
+    if (!enableRangeSelection) return;
+
+    // only update the range selection if mouse is down
+    if (isMouseRangeSelectionMode) {
+      setSelectedRangeWithBoundary({
+        ...selectedRange,
+        endRowIdx: rowIdx,
+        endColumnIdx: column.idx
+      });
+    }
+  }
+
   function getNextPosition(key: string, ctrlKey: boolean, shiftKey: boolean): Position {
     const { idx, rowIdx } = selectedPosition;
     const isRowSelected = selectedCellIsWithinSelectionBounds && idx === -1;
@@ -1283,60 +1346,9 @@ function DataGrid<R, SR, K extends Key>(
           selectCell: selectCellLatest,
           selectedCellEditor: getCellEditor(rowIdx),
           rangeSelectionMode: enableRangeSelection,
-          onCellMouseDown({ column }, { shiftKey, button, currentTarget }) {
-            // set selection focusNode to the cell (because user-select is none) - firefox needs selection range
-            // when using table with codemirror editor
-            if (navigator.userAgent.includes('Firefox')) {
-              window.getSelection()?.setBaseAndExtent(currentTarget, 0, currentTarget, 0);
-            } else {
-              window.getSelection()?.removeAllRanges();
-            }
-
-            if (!enableRangeSelection) return;
-
-            // only handle left mouse click
-            if (!shiftKey && button === 0) {
-              setIsMouseRangeSelectionMode(true);
-
-              // set the initial range selection
-              if (!isCellWithinSelectionBounds({ idx: column.idx, rowIdx })) {
-                return;
-              }
-              setSelectedRange({
-                startRowIdx: rowIdx,
-                startColumnIdx: column.idx,
-                endRowIdx: rowIdx,
-                endColumnIdx: column.idx
-              });
-            }
-          },
-          onCellMouseUp({ column }) {
-            if (!enableRangeSelection) return;
-
-            setIsMouseRangeSelectionMode(false);
-            // select final cell
-            selectCellLatest(
-              {
-                rowIdx,
-                idx: column.idx
-              },
-              {
-                shiftKey: true
-              }
-            );
-          },
-          onCellMouseEnter({ column }) {
-            if (!enableRangeSelection) return;
-
-            // only update the range selection if mouse is down
-            if (isMouseRangeSelectionMode) {
-              setSelectedRangeWithBoundary({
-                ...selectedRange,
-                endRowIdx: rowIdx,
-                endColumnIdx: column.idx
-              });
-            }
-          }
+          onCellMouseDown: onCellMouseDownLatest,
+          onCellMouseUp: onCellMouseUpLatest,
+          onCellMouseEnter: onCellMouseEnterLatest
         })
       );
     }

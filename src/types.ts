@@ -172,7 +172,10 @@ export interface CellRendererProps<TRow, TSummaryRow>
   colSpan: number | undefined;
   isDraggedOver: boolean;
   isCellSelected: boolean;
-  selectedBorder: { top: boolean; bottom: boolean; left: boolean; right: boolean } | undefined;
+  hasTopBorder: boolean | undefined;
+  hasBottomBorder: boolean | undefined;
+  hasLeftBorder: boolean | undefined;
+  hasRightBorder: boolean | undefined;
   onClick: RenderRowProps<TRow, TSummaryRow>['onCellClick'];
   onDoubleClick: RenderRowProps<TRow, TSummaryRow>['onCellDoubleClick'];
   onContextMenu: RenderRowProps<TRow, TSummaryRow>['onCellContextMenu'];

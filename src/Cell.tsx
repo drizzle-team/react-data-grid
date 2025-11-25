@@ -28,7 +28,10 @@ function Cell<R, SR>(
     column,
     colSpan,
     isCellSelected,
-    selectedBorder,
+    hasTopBorder,
+    hasBottomBorder,
+    hasLeftBorder,
+    hasRightBorder,
     isDraggedOver,
     row,
     rowIdx,
@@ -110,10 +113,10 @@ function Cell<R, SR>(
       aria-colindex={column.idx + 1} // aria-colindex is 1-based
       aria-colspan={colSpan}
       aria-selected={isCellSelected}
-      selected-top-border={selectedBorder?.top ? 'true' : undefined}
-      selected-left-border={selectedBorder?.left ? 'true' : undefined}
-      selected-bottom-border={selectedBorder?.bottom ? 'true' : undefined}
-      selected-right-border={selectedBorder?.right ? 'true' : undefined}
+      has-top-border={hasTopBorder ? 'true' : undefined}
+      has-left-border={hasLeftBorder ? 'true' : undefined}
+      has-bottom-border={hasBottomBorder ? 'true' : undefined}
+      has-right-border={hasRightBorder ? 'true' : undefined}
       aria-readonly={!isEditable || undefined}
       ref={ref}
       tabIndex={tabIndex}
