@@ -36,6 +36,7 @@ import {
   isSelectedCellEditable,
   renderMeasuringCells,
   scrollIntoView,
+  shallowEqual,
   sign
 } from './utils';
 import type {
@@ -633,7 +634,14 @@ function DataGrid<R, SR, K extends Key>(
     selectCell,
     resetSelection() {
       if (selectedPosition.mode === 'EDIT') return;
-      setSelectedPosition({ idx: -1, rowIdx: minRowIdx - 1, mode: 'SELECT' });
+      const initialSelectedPosition: SelectCellState = {
+        idx: -1,
+        rowIdx: minRowIdx - 1,
+        mode: 'SELECT'
+      };
+      setSelectedPosition((prev) =>
+        shallowEqual(prev, initialSelectedPosition) ? prev : initialSelectedPosition
+      );
       setDraggedOverRowIdx(undefined);
       setSelectedRange(initialSelectedRange);
     }

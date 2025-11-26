@@ -63,3 +63,14 @@ export function getBorderObject(rowIdx: number, colIdx: number, range: CellsRang
     right: colIdx === rightColIdx && isRowInRange
   };
 }
+
+export function shallowEqual<T extends object>(a: T, b: T): boolean {
+  const aKeys = Object.keys(a) as (keyof T)[];
+  const bKeys = Object.keys(b) as (keyof T)[];
+  if (aKeys.length !== bKeys.length) return false;
+
+  for (const k of aKeys) {
+    if (a[k] !== b[k]) return false;
+  }
+  return true;
+};
