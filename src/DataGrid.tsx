@@ -408,7 +408,20 @@ function DataGrid<R, SR, K extends Key>(
   );
 
   const [selectedRange, setSelectedRange] = useState<CellsRange>(initialSelectedRange);
+  // keep selectedRange in ref to avoid stale value in mouse event handlers
+  const selectedRangeRef = useRef(selectedRange);
   const [isMouseRangeSelectionMode, setIsMouseRangeSelectionMode] = useState<boolean>(false);
+  // keep isMouseRangeSelectionMode in ref to avoid stale value in mouse event handlers
+  const isMouseRangeSelectionModeRef = useRef(isMouseRangeSelectionMode);
+
+  // keep selectedPosition in ref to avoid stale value in onSelectedCellChange callback
+  useEffect(() => {
+    selectedRangeRef.current = selectedRange;
+  }, [selectedRange]);
+  // keep isMouseRangeSelectionMode in ref to avoid stale value in mouse event handlers
+  useEffect(() => {
+    isMouseRangeSelectionModeRef.current = isMouseRangeSelectionMode;
+  }, [isMouseRangeSelectionMode]);
 
   /**
    * refs
@@ -637,36 +650,42 @@ function DataGrid<R, SR, K extends Key>(
 
   const onCellMouseUpCapture = useCallback<
     Exclude<RenderRowProps<R, SR>['onCellMouseUpCapture'], undefined | null>
-  >(({ column, rowIdx }) => {
-    if (!enableRangeSelection) return;
+  >(
+    ({ column, rowIdx }) => {
+      if (!enableRangeSelection) return;
 
-    setIsMouseRangeSelectionMode(false);
-    // select final cell
-    selectCellLatest(
-      {
-        rowIdx,
-        idx: column.idx
-      },
-      {
-        shiftKey: true
-      }
-    );
-  }, [enableRangeSelection, selectCellLatest]);
+      setIsMouseRangeSelectionMode(false);
+      // select final cell
+      selectCellLatest(
+        {
+          rowIdx,
+          idx: column.idx
+        },
+        {
+          shiftKey: true
+        }
+      );
+    },
+    [enableRangeSelection, selectCellLatest]
+  );
 
   const onCellMouseEnter = useCallback<
     Exclude<RenderRowProps<R, SR>['onCellMouseEnter'], undefined | null>
-  >(({ column, rowIdx }) => {
-    if (!enableRangeSelection) return;
+  >(
+    ({ column, rowIdx }) => {
+      if (!enableRangeSelection) return;
 
-    // only update the range selection if mouse is down
-    if (isMouseRangeSelectionMode) {
-      setSelectedRangeWithBoundary({
-        ...selectedRange,
-        endRowIdx: rowIdx,
-        endColumnIdx: column.idx
-      });
-    }
-  }, [enableRangeSelection, isMouseRangeSelectionMode, selectedRange]);
+      // only update the range selection if mouse is down
+      if (isMouseRangeSelectionModeRef.current) {
+        setSelectedRangeWithBoundary({
+          ...selectedRangeRef.current,
+          endRowIdx: rowIdx,
+          endColumnIdx: column.idx
+        });
+      }
+    },
+    [enableRangeSelection]
+  );
 
   /**
    * effects
