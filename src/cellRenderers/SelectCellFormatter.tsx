@@ -8,11 +8,13 @@ type SharedInputProps = Pick<
 
 interface SelectCellFormatterProps extends SharedInputProps {
   value: boolean;
+  rowIdx: number;
 }
 
 export function SelectCellFormatter({
   value,
   tabIndex,
+  rowIdx,
   indeterminate,
   disabled,
   onChange,
@@ -27,6 +29,7 @@ export function SelectCellFormatter({
     tabIndex,
     indeterminate,
     disabled,
+    rowIdx,
     checked: value,
     onChange
   });

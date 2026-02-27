@@ -216,10 +216,11 @@ function getColumns(
     {
       key: 'available',
       name: 'Available',
-      renderCell({ row, onRowChange, tabIndex }) {
+      renderCell({ row, onRowChange, tabIndex, rowIdx }) {
         return (
           <SelectCellFormatter
             value={row.available}
+            rowIdx={rowIdx}
             onChange={() => {
               onRowChange({ ...row, available: !row.available });
             }}

@@ -147,6 +147,7 @@ export interface RenderHeaderCellProps<TRow, TSummaryRow = unknown> {
   sortDirection: SortDirection | undefined;
   priority: number | undefined;
   tabIndex: number;
+  rowIdx: number;
 }
 
 interface BaseCellRendererProps<TRow, TSummaryRow = unknown>
@@ -382,6 +383,7 @@ export interface RenderCheckboxProps
     React.InputHTMLAttributes<HTMLInputElement>,
     'aria-label' | 'aria-labelledby' | 'checked' | 'tabIndex' | 'disabled'
   > {
+  rowIdx: number;
   indeterminate?: boolean | undefined;
   onChange: (checked: boolean, shift: boolean) => void;
 }
