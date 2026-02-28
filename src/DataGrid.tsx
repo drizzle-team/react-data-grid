@@ -1060,7 +1060,7 @@ function DataGrid<R, SR, K extends Key>(
         });
       }
     },
-    [enableRangeSelection, isCellWithinSelectionBounds]
+    [enableRangeSelection]
   );
 
   const onCellMouseUp = useCallback(
