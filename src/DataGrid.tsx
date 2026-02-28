@@ -1028,10 +1028,18 @@ function DataGrid<R, SR, K extends Key>(
     ) => {
       // set selection focusNode to the cell (because user-select is none) - firefox needs selection range
       // when using table with codemirror editor
+      const selection = window.getSelection();
       if (navigator.userAgent.includes('Firefox')) {
-        window.getSelection()?.setBaseAndExtent(currentTarget, 0, currentTarget, 0);
+        if (
+          selection &&
+          (selection.anchorNode !== currentTarget || selection.focusNode !== currentTarget)
+        ) {
+          selection.setBaseAndExtent(currentTarget, 0, currentTarget, 0);
+        }
       } else {
-        window.getSelection()?.removeAllRanges();
+        if (selection?.rangeCount) {
+          selection.removeAllRanges();
+        }
       }
 
       if (!enableRangeSelection) return;
