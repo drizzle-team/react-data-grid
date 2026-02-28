@@ -531,6 +531,37 @@ function DataGrid<R, SR, K extends Key>(
     typeof selectionBottomBoundaryRowIdx === 'undefined' || selectionBottomBoundaryRowIdx == null
       ? maxRowIdx + 1
       : selectionBottomBoundaryRowIdx;
+
+  const isColIdxWithinSelectionBounds = useCallback(
+    (idx: number) => {
+      return (
+        idx >= minColIdx &&
+        idx <= maxColIdx &&
+        idx > selectionLeftBoundary &&
+        idx < selectionRightBoundary
+      );
+    },
+    [minColIdx, maxColIdx, selectionLeftBoundary, selectionRightBoundary]
+  );
+  const isCellWithinSelectionBounds = useCallback(
+    ({ idx, rowIdx }: Position): boolean => {
+      return (
+        rowIdx >= minRowIdx &&
+        rowIdx <= maxRowIdx &&
+        rowIdx > selectionTopBoundary &&
+        rowIdx < selectionBottomBoundary &&
+        isColIdxWithinSelectionBounds(idx)
+      );
+    },
+    [
+      minRowIdx,
+      maxRowIdx,
+      selectionTopBoundary,
+      selectionBottomBoundary,
+      isColIdxWithinSelectionBounds
+    ]
+  );
+
   const selectedCellIsWithinSelectionBounds = isCellWithinSelectionBounds(selectedPosition);
   const selectedCellIsWithinViewportBounds = isCellWithinViewportBounds(selectedPosition);
 
@@ -932,27 +963,8 @@ function DataGrid<R, SR, K extends Key>(
   /**
    * utils
    */
-  function isColIdxWithinSelectionBounds(idx: number) {
-    return (
-      idx >= minColIdx &&
-      idx <= maxColIdx &&
-      idx > selectionLeftBoundary &&
-      idx < selectionRightBoundary
-    );
-  }
-
   function isRowIdxWithinViewportBounds(rowIdx: number) {
     return rowIdx >= 0 && rowIdx < rows.length;
-  }
-
-  function isCellWithinSelectionBounds({ idx, rowIdx }: Position): boolean {
-    return (
-      rowIdx >= minRowIdx &&
-      rowIdx <= maxRowIdx &&
-      rowIdx > selectionTopBoundary &&
-      rowIdx < selectionBottomBoundary &&
-      isColIdxWithinSelectionBounds(idx)
-    );
   }
 
   function isCellWithinEditBounds({ idx, rowIdx }: Position): boolean {
@@ -1060,7 +1072,7 @@ function DataGrid<R, SR, K extends Key>(
         });
       }
     },
-    [enableRangeSelection]
+    [enableRangeSelection, isCellWithinSelectionBounds]
   );
 
   const onCellMouseUp = useCallback(
@@ -1085,6 +1097,13 @@ function DataGrid<R, SR, K extends Key>(
   const onCellMouseEnter = useCallback(
     ({ rowIdx, column }: CellClickArgs<NoInfer<R>, NoInfer<SR>>) => {
       if (!enableRangeSelection) return;
+
+      console.log('mouse enter', {
+        rowIdx,
+        columnIdx: column.idx,
+        isMouseRangeSelectionMode: isMouseRangeSelectionModeRef.current,
+        selectedRange: selectedRangeRef.current
+      });
 
       // only update the range selection if mouse is down
       if (isMouseRangeSelectionModeRef.current) {
