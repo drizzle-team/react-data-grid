@@ -403,7 +403,20 @@ function DataGrid<R, SR, K extends Key>(
   );
 
   const [selectedRange, setSelectedRange] = useState<CellsRange>(initialSelectedRange);
+  // keep selectedRange in ref to avoid stale value in mouse event handlers
+  const selectedRangeRef = useRef(selectedRange);
   const [isMouseRangeSelectionMode, setIsMouseRangeSelectionMode] = useState<boolean>(false);
+  // keep isMouseRangeSelectionMode in ref to avoid stale value in mouse event handlers
+  const isMouseRangeSelectionModeRef = useRef(isMouseRangeSelectionMode);
+
+  // keep selectedPosition in ref to avoid stale value in onSelectedCellChange callback
+  useEffect(() => {
+    selectedRangeRef.current = selectedRange;
+  }, [selectedRange]);
+  // keep isMouseRangeSelectionMode in ref to avoid stale value in mouse event handlers
+  useEffect(() => {
+    isMouseRangeSelectionModeRef.current = isMouseRangeSelectionMode;
+  }, [isMouseRangeSelectionMode]);
 
   /**
    * refs
@@ -569,9 +582,6 @@ function DataGrid<R, SR, K extends Key>(
   const onCellClickLatest = useLatestFunc(onCellClick);
   const onCellDoubleClickLatest = useLatestFunc(onCellDoubleClick);
   const onCellContextMenuLatest = useLatestFunc(onCellContextMenu);
-  const onCellMouseDownLatest = useLatestFunc(onCellMouseDown);
-  const onCellMouseUpLatest = useLatestFunc(onCellMouseUp);
-  const onCellMouseEnterLatest = useLatestFunc(onCellMouseEnter);
   const selectHeaderRowLatest = useLatestFunc(selectHeaderRow);
   const selectRowLatest = useLatestFunc(selectRow);
   const handleFormatterRowChangeLatest = useLatestFunc(updateRow);
@@ -1011,65 +1021,74 @@ function DataGrid<R, SR, K extends Key>(
     }
   }
 
-  function onCellMouseDown(
-    { rowIdx, column }: CellClickArgs<NoInfer<R>, NoInfer<SR>>,
-    { shiftKey, button, currentTarget }: CellMouseEvent
-  ) {
-    // set selection focusNode to the cell (because user-select is none) - firefox needs selection range
-    // when using table with codemirror editor
-    if (navigator.userAgent.includes('Firefox')) {
-      window.getSelection()?.setBaseAndExtent(currentTarget, 0, currentTarget, 0);
-    } else {
-      window.getSelection()?.removeAllRanges();
-    }
-
-    if (!enableRangeSelection) return;
-
-    // only handle left mouse click
-    if (!shiftKey && button === 0) {
-      setIsMouseRangeSelectionMode(true);
-
-      // set the initial range selection
-      if (!isCellWithinSelectionBounds({ idx: column.idx, rowIdx })) {
-        return;
+  const onCellMouseDown = useCallback(
+    (
+      { rowIdx, column }: CellClickArgs<NoInfer<R>, NoInfer<SR>>,
+      { shiftKey, button, currentTarget }: CellMouseEvent
+    ) => {
+      // set selection focusNode to the cell (because user-select is none) - firefox needs selection range
+      // when using table with codemirror editor
+      if (navigator.userAgent.includes('Firefox')) {
+        window.getSelection()?.setBaseAndExtent(currentTarget, 0, currentTarget, 0);
+      } else {
+        window.getSelection()?.removeAllRanges();
       }
-      setSelectedRange({
-        startRowIdx: rowIdx,
-        startColumnIdx: column.idx,
-        endRowIdx: rowIdx,
-        endColumnIdx: column.idx
-      });
-    }
-  }
 
-  function onCellMouseUp({ rowIdx, column }: CellClickArgs<NoInfer<R>, NoInfer<SR>>) {
-    if (!enableRangeSelection) return;
+      if (!enableRangeSelection) return;
 
-    setIsMouseRangeSelectionMode(false);
-    // select final cell
-    selectCellLatest(
-      {
-        rowIdx,
-        idx: column.idx
-      },
-      {
-        shiftKey: true
+      // only handle left mouse click
+      if (!shiftKey && button === 0) {
+        setIsMouseRangeSelectionMode(true);
+
+        // set the initial range selection
+        if (!isCellWithinSelectionBounds({ idx: column.idx, rowIdx })) {
+          return;
+        }
+        setSelectedRange({
+          startRowIdx: rowIdx,
+          startColumnIdx: column.idx,
+          endRowIdx: rowIdx,
+          endColumnIdx: column.idx
+        });
       }
-    );
-  }
+    },
+    [enableRangeSelection, isCellWithinSelectionBounds]
+  );
 
-  function onCellMouseEnter({ rowIdx, column }: CellClickArgs<NoInfer<R>, NoInfer<SR>>) {
-    if (!enableRangeSelection) return;
+  const onCellMouseUp = useCallback(
+    ({ rowIdx, column }: CellClickArgs<NoInfer<R>, NoInfer<SR>>) => {
+      if (!enableRangeSelection) return;
 
-    // only update the range selection if mouse is down
-    if (isMouseRangeSelectionMode) {
-      setSelectedRangeWithBoundary({
-        ...selectedRange,
-        endRowIdx: rowIdx,
-        endColumnIdx: column.idx
-      });
-    }
-  }
+      setIsMouseRangeSelectionMode(false);
+      // select final cell
+      selectCellLatest(
+        {
+          rowIdx,
+          idx: column.idx
+        },
+        {
+          shiftKey: true
+        }
+      );
+    },
+    [enableRangeSelection, selectCellLatest]
+  );
+
+  const onCellMouseEnter = useCallback(
+    ({ rowIdx, column }: CellClickArgs<NoInfer<R>, NoInfer<SR>>) => {
+      if (!enableRangeSelection) return;
+
+      // only update the range selection if mouse is down
+      if (isMouseRangeSelectionModeRef.current) {
+        setSelectedRangeWithBoundary({
+          ...selectedRangeRef.current,
+          endRowIdx: rowIdx,
+          endColumnIdx: column.idx
+        });
+      }
+    },
+    [enableRangeSelection]
+  );
 
   function getNextPosition(key: string, ctrlKey: boolean, shiftKey: boolean): Position {
     const { idx, rowIdx } = selectedPosition;
@@ -1354,9 +1373,9 @@ function DataGrid<R, SR, K extends Key>(
           selectCell: selectCellLatest,
           selectedCellEditor: getCellEditor(rowIdx),
           rangeSelectionMode: enableRangeSelection,
-          onCellMouseDown: onCellMouseDownLatest,
-          onCellMouseUp: onCellMouseUpLatest,
-          onCellMouseEnter: onCellMouseEnterLatest
+          onCellMouseDown,
+          onCellMouseUp,
+          onCellMouseEnter
         })
       );
     }
