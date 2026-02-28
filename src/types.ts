@@ -154,6 +154,7 @@ export interface RenderHeaderCellProps<TRow, TSummaryRow = unknown> {
   sortDirection: SortDirection | undefined;
   priority: number | undefined;
   tabIndex: number;
+  rowIdx: number;
 }
 
 export interface CellRendererProps<TRow, TSummaryRow>
@@ -377,6 +378,7 @@ export interface RenderCheckboxProps
   > {
   indeterminate?: boolean | undefined;
   onChange: (checked: boolean, shift: boolean) => void;
+  rowIdx: number;
 }
 
 export interface Renderers<TRow, TSummaryRow> {
