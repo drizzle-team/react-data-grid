@@ -76,6 +76,8 @@ function Cell<R, SR>(
   }
 
   function handleContextMenu(event: React.MouseEvent<HTMLDivElement>) {
+    if (isCellSelected) return; // if cell is already selected, let the event propagate to show context menu
+
     if (onContextMenu) {
       const cellEvent = createCellEvent(event);
       onContextMenu({ rowIdx, row, column, selectCell: selectCellWrapper }, cellEvent);

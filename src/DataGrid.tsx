@@ -565,44 +565,47 @@ function DataGrid<R, SR, K extends Key>(
   const selectedCellIsWithinSelectionBounds = isCellWithinSelectionBounds(selectedPosition);
   const selectedCellIsWithinViewportBounds = isCellWithinViewportBounds(selectedPosition);
 
-  const setSelectedRangeWithBoundary = (value: CellsRange) => {
-    const boundValue = { ...value };
+  const setSelectedRangeWithBoundary = useCallback(
+    (value: CellsRange) => {
+      const boundValue = { ...value };
 
-    const adjustBoundary = (start: number, end: number, min: number, max: number) => {
-      if (end <= min) end = min + 1;
-      if (start >= max) start = max - 1;
-      if (start <= min) start = min + 1;
-      if (end >= max) end = max - 1;
-      return { start, end };
-    };
+      const adjustBoundary = (start: number, end: number, min: number, max: number) => {
+        if (end <= min) end = min + 1;
+        if (start >= max) start = max - 1;
+        if (start <= min) start = min + 1;
+        if (end >= max) end = max - 1;
+        return { start, end };
+      };
 
-    const rowBoundary = adjustBoundary(
-      boundValue.startRowIdx,
-      boundValue.endRowIdx,
-      selectionTopBoundary,
-      selectionBottomBoundary
-    );
-    const columnBoundary = adjustBoundary(
-      boundValue.startColumnIdx,
-      boundValue.endColumnIdx,
-      selectionLeftBoundary,
-      selectionRightBoundary
-    );
+      const rowBoundary = adjustBoundary(
+        boundValue.startRowIdx,
+        boundValue.endRowIdx,
+        selectionTopBoundary,
+        selectionBottomBoundary
+      );
+      const columnBoundary = adjustBoundary(
+        boundValue.startColumnIdx,
+        boundValue.endColumnIdx,
+        selectionLeftBoundary,
+        selectionRightBoundary
+      );
 
-    boundValue.startRowIdx = rowBoundary.start;
-    boundValue.endRowIdx = rowBoundary.end;
-    boundValue.startColumnIdx = columnBoundary.start;
-    boundValue.endColumnIdx = columnBoundary.end;
+      boundValue.startRowIdx = rowBoundary.start;
+      boundValue.endRowIdx = rowBoundary.end;
+      boundValue.startColumnIdx = columnBoundary.start;
+      boundValue.endColumnIdx = columnBoundary.end;
 
-    if (
-      boundValue.endColumnIdx > selectionLeftBoundary &&
-      boundValue.startColumnIdx < selectionRightBoundary &&
-      boundValue.endRowIdx > selectionTopBoundary &&
-      boundValue.startRowIdx < selectionBottomBoundary
-    ) {
-      setSelectedRange(boundValue);
-    }
-  };
+      if (
+        boundValue.endColumnIdx > selectionLeftBoundary &&
+        boundValue.startColumnIdx < selectionRightBoundary &&
+        boundValue.endRowIdx > selectionTopBoundary &&
+        boundValue.startRowIdx < selectionBottomBoundary
+      ) {
+        setSelectedRange(boundValue);
+      }
+    },
+    [selectionLeftBoundary, selectionRightBoundary, selectionTopBoundary, selectionBottomBoundary]
+  );
 
   /**
    * The identity of the wrapper function is stable so it won't break memoization
@@ -1098,13 +1101,6 @@ function DataGrid<R, SR, K extends Key>(
     ({ rowIdx, column }: CellClickArgs<NoInfer<R>, NoInfer<SR>>) => {
       if (!enableRangeSelection) return;
 
-      console.log('mouse enter', {
-        rowIdx,
-        columnIdx: column.idx,
-        isMouseRangeSelectionMode: isMouseRangeSelectionModeRef.current,
-        selectedRange: selectedRangeRef.current
-      });
-
       // only update the range selection if mouse is down
       if (isMouseRangeSelectionModeRef.current) {
         setSelectedRangeWithBoundary({
@@ -1114,7 +1110,7 @@ function DataGrid<R, SR, K extends Key>(
         });
       }
     },
-    [enableRangeSelection]
+    [enableRangeSelection, setSelectedRangeWithBoundary]
   );
 
   function getNextPosition(key: string, ctrlKey: boolean, shiftKey: boolean): Position {
