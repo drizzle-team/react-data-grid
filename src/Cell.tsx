@@ -69,27 +69,32 @@ function Cell<R, SR>(
   function handleClick(event: React.MouseEvent<HTMLDivElement>) {
     if (onClick) {
       const cellEvent = createCellEvent(event);
-      onClick({ rowIdx, row, column, selectCell: selectCellWrapper }, cellEvent);
+      onClick({ rowIdx, row, column, selectCell: selectCellWrapper, isCellSelected }, cellEvent);
       if (cellEvent.isGridDefaultPrevented()) return;
     }
     selectCellWrapper(false, event.shiftKey);
   }
 
   function handleContextMenu(event: React.MouseEvent<HTMLDivElement>) {
-    if (isCellSelected) return; // if cell is already selected, let the event propagate to show context menu
-
     if (onContextMenu) {
       const cellEvent = createCellEvent(event);
-      onContextMenu({ rowIdx, row, column, selectCell: selectCellWrapper }, cellEvent);
+      onContextMenu(
+        { rowIdx, row, column, selectCell: selectCellWrapper, isCellSelected },
+        cellEvent
+      );
       if (cellEvent.isGridDefaultPrevented()) return;
     }
+    if (isCellSelected) return; // don't change selection if right-clicking on an already selected cell
     selectCellWrapper();
   }
 
   function handleDoubleClick(event: React.MouseEvent<HTMLDivElement>) {
     if (onDoubleClick) {
       const cellEvent = createCellEvent(event);
-      onDoubleClick({ rowIdx, row, column, selectCell: selectCellWrapper }, cellEvent);
+      onDoubleClick(
+        { rowIdx, row, column, selectCell: selectCellWrapper, isCellSelected },
+        cellEvent
+      );
       if (cellEvent.isGridDefaultPrevented()) return;
     }
     selectCellWrapper(true);
@@ -103,7 +108,7 @@ function Cell<R, SR>(
     function onMouseEvent(event: React.MouseEvent<HTMLDivElement>) {
       if (handler) {
         const cellEvent = createCellEvent(event);
-        handler({ rowIdx, row, column, selectCell: selectCellWrapper }, cellEvent);
+        handler({ rowIdx, row, column, selectCell: selectCellWrapper, isCellSelected }, cellEvent);
       }
     }
     return onMouseEvent;

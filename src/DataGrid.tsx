@@ -1038,7 +1038,7 @@ function DataGrid<R, SR, K extends Key>(
 
   const onCellMouseDown = useCallback(
     (
-      { rowIdx, column }: CellClickArgs<NoInfer<R>, NoInfer<SR>>,
+      { rowIdx, column, isCellSelected }: CellClickArgs<NoInfer<R>, NoInfer<SR>>,
       { shiftKey, button, currentTarget }: CellMouseEvent
     ) => {
       // set selection focusNode to the cell (because user-select is none) - firefox needs selection range
@@ -1073,6 +1073,17 @@ function DataGrid<R, SR, K extends Key>(
           endRowIdx: rowIdx,
           endColumnIdx: column.idx
         });
+      } else if (!shiftKey && button === 2 && !isCellSelected) {
+        // right click should not trigger range selection but should select the cell if it's not selected
+        selectCellLatest(
+          {
+            rowIdx,
+            idx: column.idx
+          },
+          {
+            shiftKey: false
+          }
+        );
       }
     },
     [enableRangeSelection, isCellWithinSelectionBounds]

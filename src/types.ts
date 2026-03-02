@@ -202,6 +202,7 @@ export interface CellClickArgs<TRow, TSummaryRow = unknown> {
   row: TRow;
   column: CalculatedColumn<TRow, TSummaryRow>;
   selectCell: (enableEditor?: boolean) => void;
+  isCellSelected: boolean;
 }
 
 interface SelectCellKeyDownArgs<TRow, TSummaryRow = unknown> {
