@@ -1090,8 +1090,8 @@ function DataGrid<R, SR, K extends Key>(
   );
 
   const onCellMouseUp = useCallback(
-    ({ rowIdx, column }: CellClickArgs<NoInfer<R>, NoInfer<SR>>) => {
-      if (!enableRangeSelection) return;
+    ({ rowIdx, column }: CellClickArgs<NoInfer<R>, NoInfer<SR>>, { button }: CellMouseEvent) => {
+      if (!enableRangeSelection || button !== 0) return;
 
       setIsMouseRangeSelectionMode(false);
       // select final cell
