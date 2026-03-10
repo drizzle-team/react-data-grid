@@ -423,6 +423,11 @@ function DataGrid<R, SR, K extends Key>(
    */
   const latestDraggedOverRowIdx = useRef(draggedOverRowIdx);
   const focusSinkRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef({
+    top: 0,
+    left: 0,
+    frameId: null as number | null
+  });
 
   /**
    * computed values
@@ -695,6 +700,14 @@ function DataGrid<R, SR, K extends Key>(
     onSelectedRangeChange?.(selectedRange);
   }, [selectedRange, onSelectedRangeChange]);
 
+  useEffect(() => {
+    return () => {
+      if (scrollRef.current.frameId !== null) {
+        cancelAnimationFrame(scrollRef.current.frameId);
+      }
+    };
+  }, []);
+
   /**
    * event handlers
    */
@@ -840,14 +853,29 @@ function DataGrid<R, SR, K extends Key>(
   }
 
   function handleScroll(event: React.UIEvent<HTMLDivElement>) {
-    if (!enableVirtualization) return; // do not update scrollTop and scrollLeft states to avoid unnecessary re-rendering
+    if (!enableVirtualization) return;
 
-    const { scrollTop, scrollLeft } = event.currentTarget;
-    flushSync(() => {
-      setScrollTop(scrollTop);
-      // scrollLeft is nagative when direction is rtl
-      setScrollLeft(abs(scrollLeft));
-    });
+    const { scrollTop: nextScrollTop, scrollLeft: nextScrollLeft } = event.currentTarget;
+    scrollRef.current.top = nextScrollTop;
+    // scrollLeft is nagative when direction is rtl
+    scrollRef.current.left = abs(nextScrollLeft);
+
+    if (scrollRef.current.frameId === null) {
+      scrollRef.current.frameId = requestAnimationFrame(() => {
+        scrollRef.current.frameId = null;
+
+        const latestScrollTop = scrollRef.current.top;
+        const latestScrollLeft = scrollRef.current.left;
+
+        setScrollTop((prevScrollTop) =>
+          prevScrollTop === latestScrollTop ? prevScrollTop : latestScrollTop
+        );
+        setScrollLeft((prevScrollLeft) =>
+          prevScrollLeft === latestScrollLeft ? prevScrollLeft : latestScrollLeft
+        );
+      });
+    }
+
     onScroll?.(event);
   }
 
