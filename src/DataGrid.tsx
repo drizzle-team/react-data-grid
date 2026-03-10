@@ -840,6 +840,8 @@ function DataGrid<R, SR, K extends Key>(
   }
 
   function handleScroll(event: React.UIEvent<HTMLDivElement>) {
+    if (!enableVirtualization) return; // do not update scrollTop and scrollLeft states to avoid unnecessary re-rendering
+
     const { scrollTop, scrollLeft } = event.currentTarget;
     flushSync(() => {
       setScrollTop(scrollTop);
