@@ -11,6 +11,7 @@ function HeaderRenderer(props: RenderHeaderCellProps<unknown>) {
     <SelectCellFormatter
       aria-label="Select All"
       tabIndex={props.tabIndex}
+      rowIdx={props.rowIdx}
       indeterminate={isIndeterminate}
       value={isRowSelected}
       onChange={(checked) => {
@@ -29,6 +30,7 @@ function SelectFormatter(props: RenderCellProps<unknown>) {
       tabIndex={props.tabIndex}
       disabled={isRowSelectionDisabled}
       value={isRowSelected}
+      rowIdx={props.rowIdx}
       onChange={(checked, isShiftClick) => {
         onRowSelectionChange({ row: props.row, checked, isShiftClick });
       }}
@@ -44,6 +46,7 @@ function SelectGroupFormatter(props: RenderGroupCellProps<unknown>) {
       aria-label="Select Group"
       tabIndex={props.tabIndex}
       value={isRowSelected}
+      rowIdx={props.row.startRowIndex}
       onChange={(checked) => {
         onRowSelectionChange({ row: props.row, checked, isShiftClick: false });
       }}

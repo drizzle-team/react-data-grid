@@ -11,8 +11,6 @@ const cellCopied = css`
   }
 `;
 
-const cellCopiedClassname = `rdg-cell-copied ${cellCopied}`;
-
 const cellDraggedOver = css`
   @layer rdg.Cell {
     background-color: #ccccff;
@@ -30,7 +28,10 @@ function Cell<R, SR>(
     column,
     colSpan,
     isCellSelected,
-    isCopied,
+    hasTopBorder,
+    hasBottomBorder,
+    hasLeftBorder,
+    hasRightBorder,
     isDraggedOver,
     row,
     rowIdx,
@@ -41,6 +42,9 @@ function Cell<R, SR>(
     onRowChange,
     selectCell,
     style,
+    onMouseDownCapture,
+    onMouseUpCapture,
+    onMouseEnter,
     ...props
   }: CellRendererProps<R, SR>,
   ref: React.Ref<HTMLDivElement>
@@ -51,7 +55,6 @@ function Cell<R, SR>(
   className = getCellClassname(
     column,
     {
-      [cellCopiedClassname]: isCopied,
       [cellDraggedOverClassname]: isDraggedOver
     },
     typeof cellClass === 'function' ? cellClass(row) : cellClass,
@@ -59,32 +62,39 @@ function Cell<R, SR>(
   );
   const isEditable = isCellEditableUtil(column, row);
 
-  function selectCellWrapper(openEditor?: boolean) {
-    selectCell({ rowIdx, idx: column.idx }, openEditor);
+  function selectCellWrapper(enableEditor?: boolean, shiftKey?: boolean) {
+    selectCell({ rowIdx, idx: column.idx }, { enableEditor, shiftKey });
   }
 
   function handleClick(event: React.MouseEvent<HTMLDivElement>) {
     if (onClick) {
       const cellEvent = createCellEvent(event);
-      onClick({ rowIdx, row, column, selectCell: selectCellWrapper }, cellEvent);
+      onClick({ rowIdx, row, column, selectCell: selectCellWrapper, isCellSelected }, cellEvent);
       if (cellEvent.isGridDefaultPrevented()) return;
     }
-    selectCellWrapper();
+    selectCellWrapper(false, event.shiftKey);
   }
 
   function handleContextMenu(event: React.MouseEvent<HTMLDivElement>) {
     if (onContextMenu) {
       const cellEvent = createCellEvent(event);
-      onContextMenu({ rowIdx, row, column, selectCell: selectCellWrapper }, cellEvent);
+      onContextMenu(
+        { rowIdx, row, column, selectCell: selectCellWrapper, isCellSelected },
+        cellEvent
+      );
       if (cellEvent.isGridDefaultPrevented()) return;
     }
+    if (isCellSelected) return; // don't change selection if right-clicking on an already selected cell
     selectCellWrapper();
   }
 
   function handleDoubleClick(event: React.MouseEvent<HTMLDivElement>) {
     if (onDoubleClick) {
       const cellEvent = createCellEvent(event);
-      onDoubleClick({ rowIdx, row, column, selectCell: selectCellWrapper }, cellEvent);
+      onDoubleClick(
+        { rowIdx, row, column, selectCell: selectCellWrapper, isCellSelected },
+        cellEvent
+      );
       if (cellEvent.isGridDefaultPrevented()) return;
     }
     selectCellWrapper(true);
@@ -94,12 +104,26 @@ function Cell<R, SR>(
     onRowChange(column, newRow);
   }
 
+  function getOnMouseEvent(handler: typeof onMouseDownCapture) {
+    function onMouseEvent(event: React.MouseEvent<HTMLDivElement>) {
+      if (handler) {
+        const cellEvent = createCellEvent(event);
+        handler({ rowIdx, row, column, selectCell: selectCellWrapper, isCellSelected }, cellEvent);
+      }
+    }
+    return onMouseEvent;
+  }
+
   return (
     <div
       role="gridcell"
       aria-colindex={column.idx + 1} // aria-colindex is 1-based
       aria-colspan={colSpan}
       aria-selected={isCellSelected}
+      selected-top-border={hasTopBorder ? 'true' : undefined}
+      selected-left-border={hasLeftBorder ? 'true' : undefined}
+      selected-bottom-border={hasBottomBorder ? 'true' : undefined}
+      selected-right-border={hasRightBorder ? 'true' : undefined}
       aria-readonly={!isEditable || undefined}
       ref={ref}
       tabIndex={tabIndex}
@@ -112,6 +136,9 @@ function Cell<R, SR>(
       onDoubleClick={handleDoubleClick}
       onContextMenu={handleContextMenu}
       onFocus={onFocus}
+      onMouseDownCapture={getOnMouseEvent(onMouseDownCapture)}
+      onMouseUpCapture={getOnMouseEvent(onMouseUpCapture)}
+      onMouseEnter={getOnMouseEvent(onMouseEnter)}
       {...props}
     >
       {column.renderCell({
@@ -120,7 +147,8 @@ function Cell<R, SR>(
         rowIdx,
         isCellEditable: isEditable,
         tabIndex: childTabIndex,
-        onRowChange: handleRowChange
+        onRowChange: handleRowChange,
+        selectCell
       })}
     </div>
   );

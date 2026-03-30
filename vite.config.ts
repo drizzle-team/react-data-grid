@@ -8,7 +8,7 @@ const isCI = process.env.CI === 'true';
 const isTest = process.env.NODE_ENV === 'test';
 
 export default defineConfig(({ command }) => ({
-  base: '/react-data-grid/',
+  // base: '/react-data-grid/',
   cacheDir: '.cache/vite',
   clearScreen: false,
   build: {
@@ -35,9 +35,9 @@ export default defineConfig(({ command }) => ({
       displayName: command === 'serve'
     })
   ],
-  server: {
-    open: true
-  },
+  // server: {
+  //   open: true
+  // },
   optimizeDeps: {
     include: ['@vitest/coverage-v8/browser']
   },

@@ -20,11 +20,47 @@ export const cell = css`
     white-space: nowrap;
     overflow: clip;
     text-overflow: ellipsis;
-    outline: none;
+    /* !important to override firefox user-agent stylesheet */
+    outline: none !important; 
+
+    overflow: visible;
 
     &[aria-selected='true'] {
-      outline: 2px solid var(--rdg-selection-color);
-      outline-offset: -2px;
+      background-color: var(--rdg-selection-background-color);
+    }
+
+    &[selected-top-border='true']:before,
+    &[selected-left-border='true']:before,
+    &[selected-bottom-border='true']:before,
+    &[selected-right-border='true']:before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      pointer-events: none;
+    }
+
+    &[selected-top-border='true']:before {
+      border-top-color: var(--rdg-selection-border-color);
+      border-top-width: 2px;
+      border-top-style: solid;
+    }
+
+    &[selected-left-border='true']:before {
+      border-left-color: var(--rdg-selection-border-color);
+      border-left-width: 2px;
+      border-left-style: solid;
+    }
+
+    &[selected-bottom-border='true']:before {
+      border-bottom-color: var(--rdg-selection-border-color);
+      border-bottom-width: 2px;
+      border-bottom-style: solid;
+    }
+
+    &[selected-right-border='true']:before {
+      border-right-color: var(--rdg-selection-border-color);
+      border-right-width: 2px;
+      border-right-style: solid;
     }
   }
 `;

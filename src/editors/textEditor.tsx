@@ -20,7 +20,7 @@ const textEditorInternalClassname = css`
     font-size: var(--rdg-font-size);
 
     &:focus {
-      border-color: var(--rdg-selection-color);
+      border-color: var(--rdg-selection-border-color);
       outline: none;
     }
 

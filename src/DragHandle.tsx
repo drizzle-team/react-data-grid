@@ -12,12 +12,12 @@ const cellDragHandle = css`
     cursor: move;
     inline-size: var(--rdg-drag-handle-size);
     block-size: var(--rdg-drag-handle-size);
-    background-color: var(--rdg-selection-color);
+    background-color: var(--rdg-selection-border-color);
     place-self: end;
 
     &:hover {
       --rdg-drag-handle-size: 16px;
-      border: 2px solid var(--rdg-selection-color);
+      border: 2px solid var(--rdg-selection-border-color);
       background-color: var(--rdg-background-color);
     }
   }

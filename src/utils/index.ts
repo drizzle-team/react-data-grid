@@ -1,4 +1,4 @@
-import type { CalculatedColumn, CalculatedColumnOrColumnGroup, Maybe } from '../types';
+import type { CalculatedColumn, CalculatedColumnOrColumnGroup, CellsRange, Maybe } from '../types';
 
 export * from './colSpanUtils';
 export * from './domUtils';
@@ -38,3 +38,39 @@ export function getHeaderCellRowSpan<R, SR>(
 ) {
   return column.parent === undefined ? rowIdx : column.level - column.parent.level;
 }
+
+export function isValueInBetween(value: number, num1: number, num2: number): boolean {
+  const min = Math.min(num1, num2);
+  const max = Math.max(num1, num2);
+  return value >= min && value <= max;
+}
+
+export function getBorderObject(rowIdx: number, colIdx: number, range: CellsRange) {
+  const { startRowIdx, startColumnIdx, endRowIdx, endColumnIdx } = range;
+
+  const topRowIdx = Math.min(startRowIdx, endRowIdx);
+  const bottomRowIdx = Math.max(startRowIdx, endRowIdx);
+  const leftColIdx = Math.min(startColumnIdx, endColumnIdx);
+  const rightColIdx = Math.max(startColumnIdx, endColumnIdx);
+
+  const isRowInRange = isValueInBetween(rowIdx, startRowIdx, endRowIdx);
+  const isColumnInRange = isValueInBetween(colIdx, startColumnIdx, endColumnIdx);
+
+  return {
+    top: rowIdx === topRowIdx && isColumnInRange,
+    bottom: rowIdx === bottomRowIdx && isColumnInRange,
+    left: colIdx === leftColIdx && isRowInRange,
+    right: colIdx === rightColIdx && isRowInRange
+  };
+}
+
+export function shallowEqual<T extends object>(a: T, b: T): boolean {
+  const aKeys = Object.keys(a) as (keyof T)[];
+  const bKeys = Object.keys(b) as (keyof T)[];
+  if (aKeys.length !== bKeys.length) return false;
+
+  for (const k of aKeys) {
+    if (a[k] !== b[k]) return false;
+  }
+  return true;
+};

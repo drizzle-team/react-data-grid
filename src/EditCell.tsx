@@ -9,6 +9,7 @@ import type {
   EditCellKeyDownArgs,
   Maybe,
   Omit,
+  Position,
   RenderEditCellProps
 } from './types';
 
@@ -44,6 +45,14 @@ interface EditCellProps<R, SR>
   closeEditor: (shouldFocusCell: boolean) => void;
   navigate: (event: React.KeyboardEvent<HTMLDivElement>) => void;
   onKeyDown: Maybe<(args: EditCellKeyDownArgs<R, SR>, event: CellKeyboardEvent) => void>;
+  selectCell: (
+    position: Position,
+    options?: {
+      enableEditor?: Maybe<boolean>;
+      shiftKey?: Maybe<boolean>;
+      metadata?: Record<string, unknown>;
+    }
+  ) => void;
 }
 
 export default function EditCell<R, SR>({
@@ -54,7 +63,9 @@ export default function EditCell<R, SR>({
   onRowChange,
   closeEditor,
   onKeyDown,
-  navigate
+  navigate,
+  selectCell,
+  metadata
 }: EditCellProps<R, SR>) {
   const frameRequestRef = useRef<number | undefined>(undefined);
   const commitOnOutsideClick = column.editorOptions?.commitOnOutsideClick !== false;
@@ -136,6 +147,7 @@ export default function EditCell<R, SR>({
 
   return (
     <div
+      key={column.key}
       role="gridcell"
       aria-colindex={column.idx + 1} // aria-colindex is 1-based
       aria-colspan={colSpan}
@@ -152,7 +164,8 @@ export default function EditCell<R, SR>({
             row,
             rowIdx,
             onRowChange: onEditorRowChange,
-            onClose
+            onClose,
+            metadata
           })}
           {column.editorOptions?.displayCellContent &&
             column.renderCell({
@@ -161,7 +174,8 @@ export default function EditCell<R, SR>({
               rowIdx,
               isCellEditable: true,
               tabIndex: -1,
-              onRowChange: onEditorRowChange
+              onRowChange: onEditorRowChange,
+              selectCell
             })}
         </>
       )}

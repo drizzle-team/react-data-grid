@@ -122,7 +122,6 @@ export default function HeaderCell<R, SR>({
     const headerCell = currentTarget.parentElement!;
     const { right, left } = headerCell.getBoundingClientRect();
     const offset = isRtl ? event.clientX - left : right - event.clientX;
-    let hasDoubleClicked = false;
 
     function onPointerMove(event: PointerEvent) {
       const { width, right, left } = headerCell.getBoundingClientRect();
@@ -133,27 +132,20 @@ export default function HeaderCell<R, SR>({
       }
     }
 
-    function onDoubleClick() {
-      hasDoubleClicked = true;
-      onColumnResize(column, 'max-content');
-    }
-
-    function onLostPointerCapture(event: PointerEvent) {
-      // Handle final pointer position that may have been skipped by coalesced pointer move events.
-      // Skip move pointer handling if the user double-clicked.
-      if (!hasDoubleClicked) {
-        onPointerMove(event);
-      }
-
+    function onLostPointerCapture() {
       currentTarget.removeEventListener('pointermove', onPointerMove);
-      currentTarget.removeEventListener('dblclick', onDoubleClick);
       currentTarget.removeEventListener('lostpointercapture', onLostPointerCapture);
     }
 
     currentTarget.setPointerCapture(pointerId);
     currentTarget.addEventListener('pointermove', onPointerMove);
-    currentTarget.addEventListener('dblclick', onDoubleClick);
+    // we are not using pointerup because it does not fire in some cases
+    // pointer down -> alt+tab -> pointer up over another window -> pointerup event not fired
     currentTarget.addEventListener('lostpointercapture', onLostPointerCapture);
+  }
+
+  function onDoubleClick() {
+    onColumnResize(column, 'max-content');
   }
 
   function onSort(ctrlClick: boolean) {
@@ -307,6 +299,7 @@ export default function HeaderCell<R, SR>({
           className={resizeHandleClassname}
           onClick={stopPropagation}
           onPointerDown={onPointerDown}
+          onDoubleClick={onDoubleClick}
         />
       )}
     </div>

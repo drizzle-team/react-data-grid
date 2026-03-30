@@ -2,7 +2,7 @@ import { forwardRef, memo, useMemo, type RefAttributes } from 'react';
 import clsx from 'clsx';
 
 import { RowSelectionProvider, useLatestFunc, type RowSelectionContextValue } from './hooks';
-import { getColSpan, getRowStyle } from './utils';
+import { getBorderObject, getColSpan, getRowStyle, isValueInBetween } from './utils';
 import type { CalculatedColumn, RenderRowProps } from './types';
 import { useDefaultRenderers } from './DataGridDefaultRenderersProvider';
 import { rowClassname, rowSelectedClassname } from './style/row';
@@ -13,9 +13,9 @@ function Row<R, SR>(
     rowIdx,
     gridRowStart,
     selectedCellIdx,
+    selectedRange,
     isRowSelectionDisabled,
     isRowSelected,
-    copiedCellIdx,
     draggedOverCellIdx,
     lastFrozenColumnIndex,
     row,
@@ -28,7 +28,11 @@ function Row<R, SR>(
     setDraggedOverRowIdx,
     onMouseEnter,
     onRowChange,
+    onCellMouseDown,
+    onCellMouseUp,
+    onCellMouseEnter,
     selectCell,
+    rangeSelectionMode,
     ...props
   }: RenderRowProps<R, SR>,
   ref: React.Ref<HTMLDivElement>
@@ -64,7 +68,21 @@ function Row<R, SR>(
       index += colSpan - 1;
     }
 
-    const isCellSelected = selectedCellIdx === idx;
+    const isCellSelected =
+      selectedCellIdx === idx;
+
+    const isCellInSelectedRange = (rangeSelectionMode &&
+      isValueInBetween(rowIdx, selectedRange.startRowIdx, selectedRange.endRowIdx) &&
+      isValueInBetween(idx, selectedRange.startColumnIdx, selectedRange.endColumnIdx))
+
+    const selectedBorder = rangeSelectionMode && isCellInSelectedRange
+     ? getBorderObject(rowIdx, idx, selectedRange) 
+     : !rangeSelectionMode && isCellSelected ? {
+      top: true,
+      bottom: true,
+      left: true,
+      right: true
+    } : undefined;
 
     if (isCellSelected && selectedCellEditor) {
       cells.push(selectedCellEditor);
@@ -75,14 +93,20 @@ function Row<R, SR>(
           colSpan,
           row,
           rowIdx,
-          isCopied: copiedCellIdx === idx,
           isDraggedOver: draggedOverCellIdx === idx,
-          isCellSelected,
+          isCellSelected: rangeSelectionMode ? isCellInSelectedRange : isCellSelected,
+          hasTopBorder: selectedBorder?.top,
+          hasBottomBorder: selectedBorder?.bottom,
+          hasLeftBorder: selectedBorder?.left,
+          hasRightBorder: selectedBorder?.right,
           onClick: onCellClick,
           onDoubleClick: onCellDoubleClick,
           onContextMenu: onCellContextMenu,
           onRowChange: handleRowChange,
-          selectCell
+          selectCell,
+          onMouseDownCapture: onCellMouseDown,
+          onMouseUpCapture: onCellMouseUp,
+          onMouseEnter: onCellMouseEnter,
         })
       );
     }

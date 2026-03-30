@@ -8,6 +8,7 @@ type SharedInputProps = Pick<
 
 interface SelectCellFormatterProps extends SharedInputProps {
   value: boolean;
+  rowIdx: number;
 }
 
 export function SelectCellFormatter({
@@ -16,6 +17,7 @@ export function SelectCellFormatter({
   indeterminate,
   disabled,
   onChange,
+  rowIdx,
   'aria-label': ariaLabel,
   'aria-labelledby': ariaLabelledBy
 }: SelectCellFormatterProps) {
@@ -25,6 +27,7 @@ export function SelectCellFormatter({
     'aria-label': ariaLabel,
     'aria-labelledby': ariaLabelledBy,
     tabIndex,
+    rowIdx,
     indeterminate,
     disabled,
     checked: value,

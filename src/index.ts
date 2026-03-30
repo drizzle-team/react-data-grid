@@ -13,6 +13,7 @@ export { default as Cell } from './Cell';
 export * from './Columns';
 export * from './cellRenderers';
 export { default as textEditor } from './editors/textEditor';
+export { defaultEditor } from './editors/defaultEditor';
 export { default as renderHeaderCell } from './renderHeaderCell';
 export { renderSortIcon, renderSortPriority } from './sortStatus';
 export { useRowSelection, useHeaderRowSelection } from './hooks';
@@ -34,8 +35,11 @@ export type {
   SelectHeaderRowEvent,
   SelectRowEvent,
   FillEvent,
-  CopyEvent,
-  PasteEvent,
+  CellCopyArgs,
+  CellPasteArgs,
+  CellClipboardEvent,
+  MultiCellCopyArgs,
+  MultiCellPasteArgs,
   SortDirection,
   SortColumn,
   ColSpanArgs,
@@ -46,7 +50,6 @@ export type {
   RenderSortStatusProps,
   Renderers,
   CellMouseEvent,
-  CellClickArgs,
   CellKeyDownArgs,
   CellKeyboardEvent,
   CellSelectArgs
